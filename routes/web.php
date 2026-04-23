@@ -73,6 +73,10 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'mentee'])->group(function () {
     Route::get('/payments/{sessionRequest}/pay', [PaymentController::class, 'pay'])
         ->name('payments.pay');
+    Route::get('/payments/{sessionRequest}/simulate', [PaymentController::class, 'simulate'])
+        ->name('payments.simulate');
+    Route::post('/payments/{sessionRequest}/simulate', [PaymentController::class, 'confirmSimulate'])
+        ->name('payments.confirm-simulate');
     Route::get('/payments/callback', [PaymentController::class, 'callback'])
         ->name('payments.callback');
 });

@@ -4,327 +4,280 @@
         ->map(fn ($w) => strtoupper($w[0]))
         ->implode('');
 
-    // Reviews received by this mentor
-    $reviews      = \App\Models\Review::where('reviewee_id', $user->id)
+    $reviews     = \App\Models\Review::where('reviewee_id', $user->id)
         ->with('reviewer')
         ->latest()
         ->take(5)
         ->get();
-    $avgRating    = \App\Models\Review::where('reviewee_id', $user->id)->avg('rating');
-    $reviewCount  = \App\Models\Review::where('reviewee_id', $user->id)->count();
+    $avgRating   = \App\Models\Review::where('reviewee_id', $user->id)->avg('rating') ?? 0;
+    $reviewCount = \App\Models\Review::where('reviewee_id', $user->id)->count();
+
+    $menteesCount = \App\Models\SessionRequest::where('mentor_id', $user->id)
+        ->where('status', 'accepted')
+        ->count();
 @endphp
 
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center gap-2 text-sm" style="color:#6b7a72;">
-            <a href="{{ route('mentors.index') }}" class="transition" style="color:#4a5e55;" onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='#4a5e55'">Find a Mentor</a>
-            <span>/</span>
-            <span style="color:#1a3327;">{{ $user->name }}</span>
-        </div>
-    </x-slot>
+    <div style="background:#f4f1e8; min-height:100vh;">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 
-    <div class="py-10">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-
-            {{-- Profile hero --}}
-            <div class="rounded-2xl p-8" style="background:white; border:1px solid #e6e0d0;">
-                <div class="flex flex-col sm:flex-row items-start gap-6">
-                    {{-- Avatar --}}
-                    <div class="shrink-0">
-                        @if ($user->profile_photo)
-                            <img src="{{ Storage::url($user->profile_photo) }}" alt="{{ $user->name }}"
-                                 class="w-24 h-24 rounded-full object-cover" style="border:3px solid #e6e0d0;" />
-                        @else
-                            <div class="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-black" style="background:#1a3327; color:#f4f1e8;">
-                                {{ $initials }}
-                            </div>
-                        @endif
-                    </div>
-
-                    <div class="flex-1 min-w-0">
-                        <div class="flex flex-wrap items-center gap-3">
-                            <h1 class="text-2xl font-black" style="color:#1a3327;">{{ $user->name }}</h1>
-                            @if ($profile?->isOpen())
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold" style="background:rgba(196,154,60,.12); color:#c49a3c;">Open to mentoring</span>
-                            @else
-                                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold" style="background:#ede9de; color:#6b7a72;">Currently unavailable</span>
-                            @endif
-                        </div>
-
-                        @if ($reviewCount > 0)
-                            <div class="mt-1 flex items-center gap-1.5">
-                                @php $rounded = round($avgRating * 2) / 2; @endphp
-                                @for ($s = 1; $s <= 5; $s++)
-                                    <span class="text-lg" style="color:{{ $s <= $rounded ? '#c49a3c' : '#d6cfbe' }}">★</span>
-                                @endfor
-                                <span class="text-sm font-semibold" style="color:#1a3327;">{{ number_format($avgRating, 1) }}</span>
-                                <span class="text-xs" style="color:#6b7a72;">({{ $reviewCount }} {{ Str::plural('review', $reviewCount) }})</span>
-                            </div>
-                        @endif
-
-                        @if ($user->headline)
-                            <p class="mt-1" style="color:#4a5e55;">{{ $user->headline }}</p>
-                        @endif
-
-                        @if ($profile)
-                            <div class="mt-3 flex flex-wrap gap-4 text-sm" style="color:#4a5e55;">
-                                <span class="flex items-center gap-1.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="#c49a3c" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3 3 0 0 0-4.138 4.138L9 14.172l5.657-5.657a3 3 0 0 0-4.243-4.243L9 5.929l-.828-.828a3 3 0 0 0-4.243 0z"/>
-                                    </svg>
-                                    {{ $profile->years_of_experience }} yrs experience
-                                </span>
-                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold"
-                                      style="background:rgba(26,51,39,.08); color:#1a3327;">
-                                    {{ $profile->sessionTypeLabel() }}
-                                    @if ($profile->session_type === 'paid' && $profile->hourly_rate)
-                                        &middot; ₦{{ number_format($profile->hourly_rate, 0) }}/hr
-                                    @endif
-                                </span>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {{-- Main column --}}
-                <div class="md:col-span-2 space-y-6">
-                    @if ($user->bio)
-                        <div class="rounded-2xl p-6" style="background:white; border:1px solid #e6e0d0;">
-                            <h2 class="font-black mb-3" style="color:#1a3327;">About</h2>
-                            <p class="leading-relaxed whitespace-pre-line" style="color:#4a5e55;">{{ $user->bio }}</p>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Sidebar --}}
-                <div class="space-y-6">
-                    @if ($profile && !empty($profile->expertise))
-                        <div class="rounded-2xl p-6" style="background:white; border:1px solid #e6e0d0;">
-                            <h2 class="font-black mb-3" style="color:#1a3327;">Expertise</h2>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach ($profile->expertise as $skill)
-                                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide" style="border:1px solid #d6cfbe; color:#6b7a72;">
-                                        {{ $skill }}
-                                    </span>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
-                    @auth
-                        @if (auth()->user()->isMentee())
-                            <div class="rounded-2xl p-6" style="background:#1a3327; border:1px solid #2d5240;">
-                                <h3 class="font-black text-lg" style="color:#f4f1e8;">Ready to connect?</h3>
-                                <p class="text-sm mt-1 mb-4" style="color:#8aab97;">Send {{ $user->name }} a session request.</p>
-                                @include('session-requests.partials.request-modal')
-                            </div>
-                        @endif
-                    @else
-                        <div class="rounded-2xl p-6" style="background:#1a3327; border:1px solid #2d5240;">
-                            <h3 class="font-black text-lg" style="color:#f4f1e8;">Interested?</h3>
-                            <p class="text-sm mt-1 mb-4" style="color:#8aab97;">Create a free account to request a session.</p>
-                            @include('session-requests.partials.request-modal')
-                        </div>
-                    @endauth
-                </div>
-            </div>
-
-            {{-- Reviews --}}
-            @if ($reviews->isNotEmpty())
-                <div class="rounded-2xl p-6" style="background:white; border:1px solid #e6e0d0;">
-                    <h2 class="font-black mb-4" style="color:#1a3327;">
-                        Reviews <span class="text-sm font-normal" style="color:#6b7a72;">({{ $reviewCount }} total)</span>
-                    </h2>
-                    <div class="space-y-5">
-                        @foreach ($reviews as $review)
-                            @php
-                                $ri = collect(explode(' ', $review->reviewer->name))
-                                    ->take(2)->map(fn($w) => strtoupper($w[0]))->implode('');
-                            @endphp
-                            <div class="flex gap-4">
-                                <div class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold" style="background:#ede9de; color:#1a3327;">
-                                    {{ $ri }}
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
-                                        <p class="text-sm font-semibold" style="color:#1a3327;">{{ $review->reviewer->name }}</p>
-                                        <span class="text-xs" style="color:#6b7a72;">{{ $review->created_at->diffForHumans() }}</span>
-                                    </div>
-                                    <div class="flex gap-0.5 mt-0.5">
-                                        @for ($s = 1; $s <= 5; $s++)
-                                            <span class="text-sm" style="color:{{ $s <= $review->rating ? '#c49a3c' : '#d6cfbe' }}">★</span>
-                                        @endfor
-                                    </div>
-                                    @if ($review->comment)
-                                        <p class="mt-1 text-sm" style="color:#4a5e55;">{{ $review->comment }}</p>
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+            @if (session('status'))
+                <div class="mb-6 px-5 py-3 rounded-xl text-sm font-medium" style="background:rgba(26,51,39,.08); border:1px solid #2d5240; color:#1a3327;">
+                    {{ session('status') }}
                 </div>
             @endif
 
-        </div>
-    </div>
-</x-app-layout>
-                <div class="flex flex-col sm:flex-row items-start gap-6">
-                    {{-- Avatar --}}
-                    <div class="shrink-0">
-                        @if ($user->profile_photo)
-                            <img src="{{ Storage::url($user->profile_photo) }}"
-                                 alt="{{ $user->name }}"
-                                 class="w-24 h-24 rounded-full object-cover ring-4 ring-indigo-100" />
-                        @else
-                            <div class="w-24 h-24 rounded-full bg-indigo-600 flex items-center justify-center text-white text-3xl font-bold ring-4 ring-indigo-100">
-                                {{ $initials }}
-                            </div>
-                        @endif
+            @if ($errors->any())
+                <div class="mb-6 px-5 py-3 rounded-xl text-sm" style="background:#fff0f0; border:1px solid #fca5a5; color:#dc2626;">
+                    <p class="font-bold mb-1">Please fix the following:</p>
+                    <ul class="list-disc list-inside space-y-0.5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+
+                {{-- ── Left column ── --}}
+                <div class="lg:col-span-3">
+
+                    {{-- Hero banner --}}
+                    <div class="relative rounded-2xl" style="background:#1a3327; height:190px;">
+                        <a href="{{ route('mentors.index') }}"
+                           class="absolute top-4 left-4 w-9 h-9 rounded-full flex items-center justify-center"
+                           style="background:rgba(255,255,255,0.12);"
+                           onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+                           onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+                            <svg class="w-4 h-4" fill="none" stroke="#f4f1e8" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </a>
+                        {{-- Avatar overlapping bottom-left --}}
+                        <div class="absolute -bottom-12 left-6">
+                            @if ($user->profile_photo)
+                                <img src="{{ Storage::url($user->profile_photo) }}"
+                                     alt="{{ $user->name }}"
+                                     class="w-24 h-24 rounded-full object-cover"
+                                     style="border:4px solid #f4f1e8; box-shadow:0 4px 16px rgba(0,0,0,.18);" />
+                            @else
+                                <div class="w-24 h-24 rounded-full flex items-center justify-center text-2xl font-black"
+                                     style="background:#2d5240; color:#f4f1e8; border:4px solid #f4f1e8; box-shadow:0 4px 16px rgba(0,0,0,.18);">
+                                    {{ $initials }}
+                                </div>
+                            @endif
+                        </div>
                     </div>
 
-                    <div class="flex-1 min-w-0">
+                    {{-- Profile info --}}
+                    <div class="mt-16 px-1">
+
+                        {{-- Name + badge --}}
                         <div class="flex flex-wrap items-center gap-3">
-                            <h1 class="text-2xl font-bold text-gray-900">{{ $user->name }}</h1>
+                            <h1 class="text-3xl font-black" style="color:#1a3327;">{{ $user->name }}</h1>
                             @if ($profile?->isOpen())
-                                <span class="px-2.5 py-0.5 bg-green-50 text-green-700 rounded-full text-xs font-semibold">
-                                    Open to mentoring
-                                </span>
-                            @else
-                                <span class="px-2.5 py-0.5 bg-gray-100 text-gray-500 rounded-full text-xs font-semibold">
-                                    Currently unavailable
+                                <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest"
+                                      style="background:rgba(196,154,60,.15); color:#c49a3c; border:1px solid rgba(196,154,60,.35);">
+                                    Top Mentor
                                 </span>
                             @endif
                         </div>
 
-                        {{-- Average rating --}}
-                        @if ($reviewCount > 0)
-                            <div class="mt-1 flex items-center gap-1.5">
-                                @php $rounded = round($avgRating * 2) / 2; @endphp
-                                @for ($s = 1; $s <= 5; $s++)
-                                    <span class="text-lg {{ $s <= $rounded ? 'text-amber-400' : 'text-gray-200' }}">★</span>
-                                @endfor
-                                <span class="text-sm font-semibold text-gray-700">{{ number_format($avgRating, 1) }}</span>
-                                <span class="text-xs text-gray-400">({{ $reviewCount }} {{ Str::plural('review', $reviewCount) }})</span>
-                            </div>
-                        @endif
-
+                        {{-- Headline --}}
                         @if ($user->headline)
-                            <p class="mt-1 text-gray-500">{{ $user->headline }}</p>
+                            <p class="mt-1 text-xs font-black uppercase tracking-widest" style="color:#c49a3c;">
+                                {{ $user->headline }}
+                            </p>
                         @endif
 
-                        @if ($profile)
-                            <div class="mt-3 flex flex-wrap gap-4 text-sm text-gray-600">
-                                <span class="flex items-center gap-1.5">
-                                    <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M9 12l2 2 4-4M7.835 4.697a3 3 0 0 0-4.138 4.138L9 14.172l5.657-5.657a3 3 0 0 0-4.243-4.243L9 5.929l-.828-.828a3 3 0 0 0-4.243 0z"/>
-                                    </svg>
-                                    {{ $profile->years_of_experience }} yrs experience
-                                </span>
-
-                                @php
-                                    $typeColor = match($profile->session_type) {
-                                        'free'          => 'bg-green-50 text-green-700',
-                                        'paid'          => 'bg-amber-50 text-amber-700',
-                                        'project_based' => 'bg-blue-50 text-blue-700',
-                                        default         => 'bg-gray-100 text-gray-600',
-                                    };
-                                @endphp
-                                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium {{ $typeColor }}">
-                                    {{ $profile->sessionTypeLabel() }}
-                                    @if ($profile->session_type === 'paid' && $profile->hourly_rate)
-                                        · ${{ number_format($profile->hourly_rate, 0) }}/hr
-                                    @endif
+                        {{-- Experience badge --}}
+                        @if ($profile && $profile->years_of_experience)
+                            <div class="mt-3 flex items-center gap-2">
+                                <span class="text-sm font-medium" style="color:#6b7a72;">
+                                    {{ $profile->years_of_experience }}+ yrs experience
                                 </span>
                             </div>
                         @endif
-                    </div>
-                </div>
-            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {{-- Main column --}}
-                <div class="md:col-span-2 space-y-6">
-                    @if ($user->bio)
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                            <h2 class="font-semibold text-gray-900 mb-3">About</h2>
-                            <p class="text-gray-600 leading-relaxed whitespace-pre-line">{{ $user->bio }}</p>
-                        </div>
-                    @endif
-                </div>
-
-                {{-- Sidebar --}}
-                <div class="space-y-6">
-                    @if ($profile && !empty($profile->expertise))
-                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                            <h2 class="font-semibold text-gray-900 mb-3">Expertise</h2>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach ($profile->expertise as $skill)
-                                    <span class="px-3 py-1 bg-indigo-50 text-indigo-700 rounded-full text-sm font-medium">
-                                        {{ $skill }}
-                                    </span>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
-                    @auth
-                        @if (auth()->user()->isMentee())
-                            <div class="bg-indigo-600 rounded-2xl p-6 text-white">
-                                <h3 class="font-semibold text-lg">Ready to connect?</h3>
-                                <p class="text-indigo-200 text-sm mt-1 mb-4">Send {{ $user->name }} a session request.</p>
-                                @include('session-requests.partials.request-modal')
+                        {{-- Biography --}}
+                        @if ($user->bio)
+                            <div class="mt-8">
+                                <p class="text-xs font-black uppercase tracking-widest mb-3" style="color:#6b7a72;">Biography</p>
+                                <p class="leading-relaxed" style="color:#4a5e55;">{{ $user->bio }}</p>
                             </div>
                         @endif
-                    @else
-                        <div class="bg-indigo-600 rounded-2xl p-6 text-white">
-                            <h3 class="font-semibold text-lg">Interested?</h3>
-                            <p class="text-indigo-200 text-sm mt-1 mb-4">Create a free account to request a session.</p>
-                            @include('session-requests.partials.request-modal')
-                        </div>
-                    @endauth
-                </div>
-            </div>
 
-            {{-- Reviews section --}}
-            @if ($reviews->isNotEmpty())
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="font-semibold text-gray-900 mb-4">
-                        Reviews
-                        <span class="text-sm font-normal text-gray-400 ml-1">({{ $reviewCount }} total)</span>
-                    </h2>
-                    <div class="space-y-5">
-                        @foreach ($reviews as $review)
-                            @php
-                                $ri = collect(explode(' ', $review->reviewer->name))
-                                    ->take(2)->map(fn($w) => strtoupper($w[0]))->implode('');
-                            @endphp
-                            <div class="flex gap-4">
-                                <div class="shrink-0 w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">
-                                    {{ $ri }}
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center gap-2">
-                                        <p class="text-sm font-semibold text-gray-800">{{ $review->reviewer->name }}</p>
-                                        <span class="text-xs text-gray-400">{{ $review->created_at->diffForHumans() }}</span>
-                                    </div>
-                                    <div class="flex gap-0.5 mt-0.5">
-                                        @for ($s = 1; $s <= 5; $s++)
-                                            <span class="text-sm {{ $s <= $review->rating ? 'text-amber-400' : 'text-gray-200' }}">★</span>
-                                        @endfor
-                                    </div>
-                                    @if ($review->comment)
-                                        <p class="mt-1 text-sm text-gray-600">{{ $review->comment }}</p>
-                                    @endif
+                        {{-- Core Outcomes (Expertise) --}}
+                        @if ($profile && !empty($profile->expertise))
+                            <div class="mt-8">
+                                <p class="text-xs font-black uppercase tracking-widest mb-4" style="color:#6b7a72;">Core Outcomes</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    @foreach ($profile->expertise as $skill)
+                                        <div class="flex items-center gap-3 rounded-xl px-4 py-3"
+                                             style="background:white; border:1px solid #e6e0d0;">
+                                            <span class="shrink-0 w-6 h-6 rounded-full flex items-center justify-center"
+                                                  style="border:1.5px solid #c49a3c;">
+                                                <svg class="w-3 h-3" fill="none" stroke="#c49a3c" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                                </svg>
+                                            </span>
+                                            <span class="text-sm font-medium" style="color:#1a3327;">{{ $skill }}</span>
+                                        </div>
+                                    @endforeach
                                 </div>
                             </div>
-                        @endforeach
+                        @endif
+
+                        {{-- Reviews --}}
+                        @if ($reviews->isNotEmpty())
+                            <div class="mt-10">
+                                <p class="text-xs font-black uppercase tracking-widest mb-4" style="color:#6b7a72;">Community Reviews</p>
+                                <div class="space-y-4">
+                                    @foreach ($reviews as $review)
+                                        @php
+                                            $ri = collect(explode(' ', $review->reviewer->name))
+                                                ->take(2)->map(fn($w) => strtoupper($w[0]))->implode('');
+                                        @endphp
+                                        <div class="flex gap-4 rounded-xl p-4" style="background:white; border:1px solid #e6e0d0;">
+                                            <div class="shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold"
+                                                 style="background:#ede9de; color:#1a3327;">
+                                                {{ $ri }}
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center gap-2">
+                                                    <p class="text-sm font-semibold" style="color:#1a3327;">{{ $review->reviewer->name }}</p>
+                                                    <span class="text-xs" style="color:#6b7a72;">{{ $review->created_at->diffForHumans() }}</span>
+                                                </div>
+                                                <div class="flex gap-0.5 mt-0.5">
+                                                    @for ($s = 1; $s <= 5; $s++)
+                                                        <span class="text-sm" style="color:{{ $s <= $review->rating ? '#c49a3c' : '#d6cfbe' }}">&#9733;</span>
+                                                    @endfor
+                                                </div>
+                                                @if ($review->comment)
+                                                    <p class="mt-1 text-sm" style="color:#4a5e55;">{{ $review->comment }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                     </div>
                 </div>
-            @endif
 
+                {{-- ── Right column ── --}}
+                <div class="lg:col-span-2 space-y-4" style="position:sticky; top:1.5rem;">
+
+                    {{-- Stats card --}}
+                    <div class="rounded-2xl p-6" style="background:white; border:1px solid #e6e0d0;">
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <p class="text-xs font-black uppercase tracking-widest mb-1" style="color:#6b7a72;">Mentees</p>
+                                <p class="text-3xl font-black" style="color:#1a3327;">
+                                    {{ $menteesCount > 0 ? $menteesCount . '+' : '0' }}
+                                </p>
+                            </div>
+                            <div style="border-left:1px solid #e6e0d0; padding-left:1.5rem;">
+                                <p class="text-xs font-black uppercase tracking-widest mb-1" style="color:#6b7a72;">Response</p>
+                                <p class="text-3xl font-black" style="color:#1a3327;">24h</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if ($profile)
+                        @if ($profile->session_type === 'paid' && $profile->hourly_rate)
+
+                            {{-- Premium Access card --}}
+                            <div class="rounded-2xl p-6" style="background:#1a3327;">
+                                <p class="text-xs font-black uppercase tracking-widest mb-2" style="color:#c49a3c;">Premium Access</p>
+                                <p class="text-4xl font-black mb-5" style="color:#c49a3c;">
+                                    &#8358;{{ number_format($profile->hourly_rate, 0) }}
+                                </p>
+                                @auth
+                                    @if (auth()->user()->isMentee())
+                                        @include('session-requests.partials.request-modal')
+                                    @else
+                                        <p class="text-sm" style="color:#8aab97;">Only mentees can request sessions.</p>
+                                    @endif
+                                @else
+                                    <a href="{{ route('register') }}"
+                                       class="block w-full text-center py-3 rounded-xl font-bold text-sm transition"
+                                       style="background:#c49a3c; color:#1a3327;"
+                                       onmouseover="this.style.background='#d4a94d'"
+                                       onmouseout="this.style.background='#c49a3c'">
+                                        Start Paid Mentorship
+                                    </a>
+                                @endauth
+                            </div>
+
+                            {{-- Scholarship Path card --}}
+                            <div class="rounded-2xl p-6" style="background:white; border:1px solid #e6e0d0;">
+                                <p class="text-xs font-black uppercase tracking-widest mb-2" style="color:#6b7a72;">Scholarship Path</p>
+                                <p class="text-sm mb-4" style="color:#4a5e55;">
+                                    Highly competitive. Only for those with <strong style="color:#1a3327;">extreme technical discipline</strong>.
+                                </p>
+                                @auth
+                                    @if (auth()->user()->isMentee())
+                                        <button type="button"
+                                                class="w-full py-3 rounded-xl text-sm font-bold transition"
+                                                style="border:2px solid #1a3327; color:#1a3327; background:transparent;"
+                                                onmouseover="this.style.background='#1a3327';this.style.color='#f4f1e8'"
+                                                onmouseout="this.style.background='transparent';this.style.color='#1a3327'">
+                                            Apply via Qualification
+                                        </button>
+                                    @endif
+                                @else
+                                    <a href="{{ route('register') }}"
+                                       class="block w-full text-center py-3 rounded-xl text-sm font-bold"
+                                       style="border:2px solid #1a3327; color:#1a3327;">
+                                        Apply via Qualification
+                                    </a>
+                                @endauth
+                            </div>
+
+                        @else
+
+                            {{-- Free Access card --}}
+                            <div class="rounded-2xl p-6" style="background:#1a3327;">
+                                <p class="text-xs font-black uppercase tracking-widest mb-2" style="color:#c49a3c;">Free Access</p>
+                                <p class="text-4xl font-black mb-1" style="color:#f4f1e8;">&#8358;0</p>
+                                <p class="text-sm mb-5" style="color:#8aab97;">No cost. Just commitment.</p>
+                                @auth
+                                    @if (auth()->user()->isMentee())
+                                        @include('session-requests.partials.request-modal')
+                                    @else
+                                        <p class="text-sm" style="color:#8aab97;">Only mentees can request sessions.</p>
+                                    @endif
+                                @else
+                                    <a href="{{ route('register') }}"
+                                       class="block w-full text-center py-3 rounded-xl font-bold text-sm transition"
+                                       style="background:#c49a3c; color:#1a3327;"
+                                       onmouseover="this.style.background='#d4a94d'"
+                                       onmouseout="this.style.background='#c49a3c'">
+                                        Connect for Free
+                                    </a>
+                                @endauth
+                            </div>
+
+                        @endif
+                    @endif
+
+                    {{-- Community Rating card --}}
+                    @if ($reviewCount > 0)
+                        <div class="rounded-2xl p-6" style="background:#c49a3c;">
+                            <p class="text-xs font-black uppercase tracking-widest mb-3" style="color:rgba(255,255,255,0.7);">Community Rating</p>
+                            <div class="flex items-end gap-2">
+                                <span style="color:white; font-size:1.4rem; line-height:1;">&#9733;</span>
+                                <span class="font-black" style="color:white; font-size:2.5rem; line-height:1;">{{ number_format($avgRating, 2) }}</span>
+                                <span class="font-semibold mb-1" style="color:rgba(255,255,255,0.7); font-size:1.1rem;">/ 5.0</span>
+                            </div>
+                        </div>
+                    @endif
+
+                </div>
+
+            </div>
         </div>
     </div>
 </x-app-layout>

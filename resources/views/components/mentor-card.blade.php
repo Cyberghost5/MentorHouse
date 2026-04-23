@@ -1,4 +1,4 @@
-﻿@props(['mentor'])
+@props(['mentor'])
 
 @php
     $profile  = $mentor->mentorProfile;

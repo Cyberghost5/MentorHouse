@@ -4,7 +4,7 @@
   Requires Alpine.js (shipped with Breeze).
 --}}
 
-<div x-data="{ open: false }" @keydown.escape.window="open = false">
+<div x-data="{ open: {{ $errors->any() ? 'true' : 'false' }} }" @keydown.escape.window="open = false">
 
     {{-- Trigger button --}}
     @auth
@@ -67,7 +67,7 @@
                 @php
                     $typeInfo = match($profile->session_type) {
                         'free'          => ['label' => 'Free Session', 'color' => 'bg-green-50 text-green-700 border-green-200'],
-                        'paid'          => ['label' => 'Paid · $' . number_format($profile->hourly_rate, 0) . '/hr', 'color' => 'bg-amber-50 text-amber-700 border-amber-200'],
+                        'paid'          => ['label' => 'Paid · ₦' . number_format($profile->hourly_rate, 0), 'color' => 'bg-amber-50 text-amber-700 border-amber-200'],
                         'project_based' => ['label' => 'Project-based', 'color' => 'bg-blue-50 text-blue-700 border-blue-200'],
                         default         => ['label' => ucfirst($profile->session_type), 'color' => 'bg-gray-50 text-gray-600 border-gray-200'],
                     };
@@ -143,7 +143,7 @@
                 @if ($profile->session_type === 'paid' && $profile->hourly_rate)
                     <input type="hidden" name="fee_amount" value="{{ $profile->hourly_rate }}" />
                     <p class="text-xs text-gray-500 bg-gray-50 rounded-xl px-4 py-3">
-                        💳 The fee of <strong>${{ number_format($profile->hourly_rate, 0) }}/hr</strong> is set by the mentor.
+                        💳 The fee of <strong>₦{{ number_format($profile->hourly_rate, 0) }}</strong> is set by the mentor.
                         Payment details will be shared once the request is accepted.
                     </p>
                 @endif

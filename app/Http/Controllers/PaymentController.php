@@ -8,6 +8,7 @@ use App\Services\PaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class PaymentController extends Controller
@@ -16,9 +17,9 @@ class PaymentController extends Controller
 
     /**
      * Initiate payment for an accepted paid session request.
-     * Redirects the mentee to the gateway checkout page.
+     * Redirects the mentee to the gateway checkout page (or local simulator).
      */
-    public function pay(Request $request, SessionRequest $sessionRequest): RedirectResponse
+    public function pay(Request $request, SessionRequest $sessionRequest): \Illuminate\Http\Response|RedirectResponse
     {
         $user = $request->user();
 
@@ -38,6 +39,11 @@ class PaymentController extends Controller
                 ->with('status', 'This session has already been paid for.');
         }
 
+        // When no gateway key is configured, use the built-in simulator.
+        if (! config('services.paystack.secret') && ! config('services.korapay.secret')) {
+            return redirect()->route('payments.simulate', $sessionRequest);
+        }
+
         try {
             $checkoutUrl = $this->paymentService->initiate($payment, $user->email);
         } catch (\RuntimeException $e) {
@@ -46,6 +52,40 @@ class PaymentController extends Controller
         }
 
         return redirect()->away($checkoutUrl);
+    }
+
+    /**
+     * Show the simulated checkout page (local / no-key mode).
+     */
+    public function simulate(Request $request, SessionRequest $sessionRequest): View
+    {
+        abort_unless($request->user()->id === $sessionRequest->mentee_id, 403);
+
+        $payment = $sessionRequest->payment;
+        abort_if(! $payment, 404);
+
+        return view('payments.simulate', compact('sessionRequest', 'payment'));
+    }
+
+    /**
+     * Confirm a simulated payment — marks it paid immediately.
+     */
+    public function confirmSimulate(Request $request, SessionRequest $sessionRequest): RedirectResponse
+    {
+        abort_unless($request->user()->id === $sessionRequest->mentee_id, 403);
+
+        $payment = $sessionRequest->payment;
+        abort_if(! $payment, 404);
+
+        if (! $payment->isPaid()) {
+            $payment->update([
+                'status'            => 'paid',
+                'gateway_reference' => 'SIM-' . strtoupper(\Illuminate\Support\Str::random(10)),
+            ]);
+        }
+
+        return redirect()->route('session-requests.index')
+            ->with('status', 'Payment successful! Your session is confirmed.');
     }
 
     /**
