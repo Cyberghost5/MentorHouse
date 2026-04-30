@@ -37,9 +37,7 @@
 @section('seo_og_description', Str::limit($seoDescription, 200))
 @section('seo_og_type', 'profile')
 @section('seo_og_url', $canonicalUrl)
-@if ($ogImage)
-@section('seo_og_image', url($ogImage))
-@endif
+@section('seo_og_image', $ogImage ? url($ogImage) : url('/og-image.svg'))
 
 @push('seo_extra')
 <script type="application/ld+json">
