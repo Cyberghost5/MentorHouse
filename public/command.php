@@ -16,9 +16,9 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
-$status = $kernel->call('route:clear');
+$status = $kernel->call('optimize:clear');
 
 echo '<pre>';
-echo "route:clear exit code: {$status}\n";
+echo "optimize:clear exit code: {$status}\n";
 echo $kernel->output();
 echo '</pre>';
