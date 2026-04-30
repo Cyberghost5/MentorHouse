@@ -18,6 +18,11 @@ Route::middleware('guest')->group(function () {
         ->name('password.reset');
 });
 
+Route::post('logout', function () {
+    app(\App\Livewire\Actions\Logout::class)();
+    return redirect('/');
+})->middleware('auth')->name('logout');
+
 Route::middleware('auth')->group(function () {
     Volt::route('verify-email', 'pages.auth.verify-email')
         ->name('verification.notice');
