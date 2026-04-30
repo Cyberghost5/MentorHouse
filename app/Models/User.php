@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Withdrawal;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -103,6 +104,39 @@ class User extends Authenticatable implements MustVerifyEmail
             ->whereHas('sessionRequest', fn ($q) => $q->where('mentor_id', $this->id))
             ->where('status', 'paid')
             ->sum('amount');
+    }
+
+    /**
+     * Total withdrawn (approved withdrawals only).
+     */
+    public function totalWithdrawn(): float
+    {
+        return (float) Withdrawal::where('mentor_id', $this->id)
+            ->where('status', Withdrawal::STATUS_APPROVED)
+            ->sum('amount');
+    }
+
+    /**
+     * Pending withdrawal amount (not yet approved or rejected).
+     */
+    public function pendingWithdrawal(): float
+    {
+        return (float) Withdrawal::where('mentor_id', $this->id)
+            ->where('status', Withdrawal::STATUS_PENDING)
+            ->sum('amount');
+    }
+
+    /**
+     * Available balance = earnings - approved withdrawals - pending withdrawals.
+     */
+    public function availableBalance(): float
+    {
+        return max(0, $this->totalEarnings() - $this->totalWithdrawn() - $this->pendingWithdrawal());
+    }
+
+    public function withdrawals(): HasMany
+    {
+        return $this->hasMany(Withdrawal::class, 'mentor_id');
     }
 
     public function getUsernameAttribute(): string

@@ -41,6 +41,7 @@
                                accept="image/png,image/jpeg,image/webp"
                                class="block w-full text-sm rounded-xl file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold"
                                style="border:1px solid #d6cfbe; color:#1a3327;" />
+                        <p class="mt-1.5 text-xs" style="color:#8aab97;">Recommended: 400 &times; 400 px, square. Max 5 MB (JPG, PNG, WebP).</p>
                         @error('profile_photo')
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
                         @enderror
@@ -60,6 +61,7 @@
                                accept="image/png,image/jpeg,image/webp"
                                class="block w-full text-sm rounded-xl file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold"
                                style="border:1px solid #d6cfbe; color:#1a3327;" />
+                        <p class="mt-1.5 text-xs" style="color:#8aab97;">Recommended: 1200 &times; 400 px, landscape (3:1). Max 5 MB (JPG, PNG, WebP).</p>
                         @error('cover_photo')
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
                         @enderror

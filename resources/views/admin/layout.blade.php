@@ -22,11 +22,12 @@
         <nav class="flex-1 px-3 py-4 space-y-1 text-sm">
             @php
                 $nav = [
-                    ['route' => 'admin.dashboard',  'label' => '📊 Dashboard'],
-                    ['route' => 'admin.users',       'label' => '👥 Users'],
-                    ['route' => 'admin.sessions',    'label' => '📅 Sessions'],
-                    ['route' => 'admin.reviews',     'label' => '⭐ Reviews'],
-                    ['route' => 'admin.settings',    'label' => '⚙️ Settings'],
+                    ['route' => 'admin.dashboard',       'label' => '📊 Dashboard'],
+                    ['route' => 'admin.users',            'label' => '👥 Users'],
+                    ['route' => 'admin.sessions',         'label' => '📅 Sessions'],
+                    ['route' => 'admin.reviews',          'label' => '⭐ Reviews'],
+                    ['route' => 'admin.withdrawals.index','label' => '💸 Withdrawals'],
+                    ['route' => 'admin.settings',         'label' => '⚙️ Settings'],
                 ];
             @endphp
             @foreach ($nav as $item)

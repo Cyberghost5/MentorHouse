@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\WithdrawalAdminController;
 use App\Http\Controllers\MentorProfileController;
+use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReviewController;
@@ -38,6 +40,11 @@ Route::middleware(['auth', 'mentor'])->group(function () {
         ->name('mentor.profile.update');
 
     Route::view('mentor/dashboard', 'mentor.dashboard')->name('mentor.dashboard');
+
+    Route::get('/mentor/withdrawals', [WithdrawalController::class, 'index'])
+        ->name('mentor.withdrawals.index');
+    Route::post('/mentor/withdrawals', [WithdrawalController::class, 'store'])
+        ->name('mentor.withdrawals.store');
 });
 
 // ─── Mentee-only: submit session requests ─────────────────────────────────
@@ -100,6 +107,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/reviews/{review}', [AdminController::class, 'deleteReview'])->name('reviews.destroy');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+
+    Route::get('/withdrawals', [WithdrawalAdminController::class, 'index'])->name('withdrawals.index');
+    Route::patch('/withdrawals/{withdrawal}/approve', [WithdrawalAdminController::class, 'approve'])->name('withdrawals.approve');
+    Route::patch('/withdrawals/{withdrawal}/reject',  [WithdrawalAdminController::class, 'reject'])->name('withdrawals.reject');
 });
 
 require __DIR__.'/auth.php';
