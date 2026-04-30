@@ -12,10 +12,51 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('mentor.profile.update') }}"
+            <form method="POST" action="{{ route('mentor.profile.update') }}" enctype="multipart/form-data"
                   class="rounded-2xl p-8 space-y-8" style="background:white; border:1px solid #e6e0d0;">
                 @csrf
                 @method('PUT')
+
+                {{-- Mentor images --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="profile_photo" class="block text-sm font-semibold mb-2" style="color:#1a3327;">Profile Picture</label>
+                        @if (auth()->user()->profile_photo)
+                            <img src="{{ Storage::url(auth()->user()->profile_photo) }}"
+                                 alt="Current profile picture"
+                                 class="w-20 h-20 rounded-full object-cover mb-3"
+                                 style="border:2px solid #e6e0d0;" />
+                        @endif
+                        <input type="file"
+                               name="profile_photo"
+                               id="profile_photo"
+                               accept="image/png,image/jpeg,image/webp"
+                               class="block w-full text-sm rounded-xl file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold"
+                               style="border:1px solid #d6cfbe; color:#1a3327;" />
+                        @error('profile_photo')
+                            <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="cover_photo" class="block text-sm font-semibold mb-2" style="color:#1a3327;">Cover Picture</label>
+                        @if ($profile->cover_photo)
+                            <img src="{{ Storage::url($profile->cover_photo) }}"
+                                 alt="Current cover picture"
+                                 class="w-full h-20 rounded-xl object-cover mb-3"
+                                 style="border:2px solid #e6e0d0;" />
+                        @endif
+                        <input type="file"
+                               name="cover_photo"
+                               id="cover_photo"
+                               accept="image/png,image/jpeg,image/webp"
+                               class="block w-full text-sm rounded-xl file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold"
+                               style="border:1px solid #d6cfbe; color:#1a3327;" />
+                        @error('cover_photo')
+                            <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
 
                 {{-- Expertise / skills --}}
                 <div>
@@ -75,18 +116,18 @@
                     @enderror
                 </div>
 
-                {{-- Hourly rate (shown only when session_type = paid) --}}
-                <div id="hourly-rate-field" class="{{ old('session_type', $profile->session_type) === 'paid' ? '' : 'hidden' }}">
-                    <label for="hourly_rate" class="block text-sm font-semibold mb-2" style="color:#1a3327;">Hourly Rate (₦)</label>
+                {{-- One-time fee (shown only when session_type = paid) --}}
+                <div id="one-time-fee-field" class="{{ old('session_type', $profile->session_type) === 'paid' ? '' : 'hidden' }}">
+                    <label for="one_time_fee" class="block text-sm font-semibold mb-2" style="color:#1a3327;">One-Time Fee (₦)</label>
                     <div class="relative w-48">
                         <span class="absolute inset-y-0 left-3 flex items-center text-sm" style="color:#6b7a72;">₦</span>
-                        <input type="number" name="hourly_rate" id="hourly_rate" min="0" max="9999999" step="1"
-                               value="{{ old('hourly_rate', $profile->hourly_rate) }}"
-                               class="w-full pl-7 pr-4 py-2.5 rounded-xl text-sm transition @error('hourly_rate') border-red-400 @enderror"
+                        <input type="number" name="one_time_fee" id="one_time_fee" min="0" max="9999999" step="1"
+                               value="{{ old('one_time_fee', $profile->one_time_fee) }}"
+                               class="w-full pl-7 pr-4 py-2.5 rounded-xl text-sm transition @error('one_time_fee') border-red-400 @enderror"
                                style="border:1px solid #d6cfbe; color:#1a3327;"
                                onfocus="this.style.borderColor='#1a3327'" onblur="this.style.borderColor='#d6cfbe'" />
                     </div>
-                    @error('hourly_rate')
+                    @error('one_time_fee')
                         <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -135,10 +176,10 @@
                });
         });
 
-        // Show/hide hourly rate field based on session type selection
+        // Show/hide one-time fee field based on session type selection
         document.querySelectorAll('input[name="session_type"]').forEach(function (radio) {
             radio.addEventListener('change', function () {
-                document.getElementById('hourly-rate-field').classList.toggle('hidden', this.value !== 'paid');
+                document.getElementById('one-time-fee-field').classList.toggle('hidden', this.value !== 'paid');
             });
         });
     </script>

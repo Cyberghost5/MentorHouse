@@ -43,7 +43,13 @@
                 <div class="lg:col-span-3">
 
                     {{-- Hero banner --}}
-                    <div class="relative rounded-2xl" style="background:#1a3327; height:190px;">
+                    <div class="relative rounded-2xl overflow-hidden" style="background:#1a3327; height:190px;">
+                        @if ($profile?->cover_photo)
+                            <img src="{{ Storage::url($profile->cover_photo) }}"
+                                 alt="{{ $user->name }} cover picture"
+                                 class="absolute inset-0 w-full h-full object-cover" />
+                            <div class="absolute inset-0" style="background:rgba(12, 24, 19, 0.38);"></div>
+                        @endif
                         <a href="{{ route('mentors.index') }}"
                            class="absolute top-4 left-4 w-9 h-9 rounded-full flex items-center justify-center"
                            style="background:rgba(255,255,255,0.12);"
@@ -186,13 +192,13 @@
                     </div>
 
                     @if ($profile)
-                        @if ($profile->session_type === 'paid' && $profile->hourly_rate)
+                        @if ($profile->session_type === 'paid' && $profile->one_time_fee)
 
-                            {{-- Premium Access card --}}
+                            {{-- Paid Mentorship card --}}
                             <div class="rounded-2xl p-6" style="background:#1a3327;">
-                                <p class="text-xs font-black uppercase tracking-widest mb-2" style="color:#c49a3c;">Premium Access</p>
+                                <p class="text-xs font-black uppercase tracking-widest mb-2" style="color:#c49a3c;">One-Time Session Fee</p>
                                 <p class="text-4xl font-black mb-5" style="color:#c49a3c;">
-                                    &#8358;{{ number_format($profile->hourly_rate, 0) }}
+                                    &#8358;{{ number_format($profile->one_time_fee, 0) }}
                                 </p>
                                 @auth
                                     @if (auth()->user()->isMentee())

@@ -20,7 +20,7 @@ new class extends Component
         $this->markRead();
     }
 
-    public function messages(): \Illuminate\Database\Eloquent\Collection
+    public function chatMessages(): \Illuminate\Database\Eloquent\Collection
     {
         return $this->conversation->messages()->with('sender')->oldest()->get();
     }
@@ -61,7 +61,7 @@ new class extends Component
         wire:ignore.self
     >
         @php $userId = auth()->id(); @endphp
-        @forelse ($this->messages() as $message)
+        @forelse ($this->chatMessages() as $message)
             @php $isMine = $message->sender_id === $userId; @endphp
             <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }}">
                 <div class="max-w-xs lg:max-w-md rounded-2xl px-4 py-2.5 text-sm"

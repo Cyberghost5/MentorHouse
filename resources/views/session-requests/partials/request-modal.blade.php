@@ -6,16 +6,33 @@
 
 <div x-data="{ open: {{ $errors->any() ? 'true' : 'false' }} }" @keydown.escape.window="open = false">
 
+    @php
+        $hasPendingRequest = auth()->check()
+            && auth()->user()->isMentee()
+            && \App\Models\SessionRequest::where('mentee_id', auth()->id())
+                ->where('mentor_id', $user->id)
+                ->where('status', \App\Models\SessionRequest::STATUS_PENDING)
+                ->exists();
+    @endphp
+
     {{-- Trigger button --}}
     @auth
         @if (auth()->user()->isMentee())
             @if ($profile?->isOpen())
-                <button @click="open = true"
-                        class="w-full text-center font-bold rounded-xl py-2.5 transition"
-                        style="background:#c49a3c; color:#1a3327;"
-                        onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-                    Request Session
-                </button>
+                @if ($hasPendingRequest)
+                    <button disabled
+                            class="w-full text-center bg-gray-200 text-gray-500 font-semibold rounded-xl py-2.5 cursor-not-allowed">
+                        Request Pending
+                    </button>
+                    <p class="mt-2 text-xs" style="color:#8aab97;">You already have a pending request with this mentor.</p>
+                @else
+                    <button @click="open = true"
+                            class="w-full text-center font-bold rounded-xl py-2.5 transition"
+                            style="background:#c49a3c; color:#1a3327;"
+                            onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                        Request Session
+                    </button>
+                @endif
             @else
                 <button disabled
                         class="w-full text-center bg-gray-200 text-gray-400 font-semibold rounded-xl py-2.5 cursor-not-allowed">
@@ -67,7 +84,7 @@
                 @php
                     $typeInfo = match($profile->session_type) {
                         'free'          => ['label' => 'Free Session', 'color' => 'bg-green-50 text-green-700 border-green-200'],
-                        'paid'          => ['label' => 'Paid · ₦' . number_format($profile->hourly_rate, 0), 'color' => 'bg-amber-50 text-amber-700 border-amber-200'],
+                        'paid'          => ['label' => 'Paid · One-Time Fee ₦' . number_format($profile->one_time_fee, 0), 'color' => 'bg-amber-50 text-amber-700 border-amber-200'],
                         'project_based' => ['label' => 'Project-based', 'color' => 'bg-blue-50 text-blue-700 border-blue-200'],
                         default         => ['label' => ucfirst($profile->session_type), 'color' => 'bg-gray-50 text-gray-600 border-gray-200'],
                     };
@@ -140,10 +157,10 @@
                 @endif
 
                 {{-- Fee note for paid --}}
-                @if ($profile->session_type === 'paid' && $profile->hourly_rate)
-                    <input type="hidden" name="fee_amount" value="{{ $profile->hourly_rate }}" />
+                @if ($profile->session_type === 'paid' && $profile->one_time_fee)
+                    <input type="hidden" name="fee_amount" value="{{ $profile->one_time_fee }}" />
                     <p class="text-xs text-gray-500 bg-gray-50 rounded-xl px-4 py-3">
-                        💳 The fee of <strong>₦{{ number_format($profile->hourly_rate, 0) }}</strong> is set by the mentor.
+                        💳 The one-time fee of <strong>₦{{ number_format($profile->one_time_fee, 0) }}</strong> is set by the mentor.
                         Payment details will be shared once the request is accepted.
                     </p>
                 @endif

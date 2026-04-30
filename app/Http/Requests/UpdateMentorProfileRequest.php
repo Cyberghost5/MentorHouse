@@ -18,15 +18,17 @@ class UpdateMentorProfileRequest extends FormRequest
             'expertise.*'         => ['string', 'max:60'],
             'availability'        => ['required', 'in:open,closed'],
             'session_type'        => ['required', 'in:free,paid,project_based'],
-            'hourly_rate'         => ['nullable', 'numeric', 'min:0', 'max:9999.99', 'required_if:session_type,paid'],
+            'one_time_fee'        => ['nullable', 'numeric', 'min:0', 'max:9999.99', 'required_if:session_type,paid'],
             'years_of_experience' => ['required', 'integer', 'min:0', 'max:50'],
+            'profile_photo'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'cover_photo'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'hourly_rate.required_if' => 'An hourly rate is required for paid sessions.',
+            'one_time_fee.required_if' => 'A one-time fee is required for paid sessions.',
         ];
     }
 }

@@ -11,9 +11,13 @@ use Livewire\Volt\Volt;
 
 Route::view('/', 'welcome');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::get('dashboard', function () {
+    $user = auth()->user();
+    if ($user->isMentor())  return redirect()->route('mentor.dashboard');
+    if ($user->isMentee()) return redirect()->route('mentee.dashboard');
+    if ($user->isAdmin())  return redirect()->route('admin.dashboard');
+    return redirect()->route('profile');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

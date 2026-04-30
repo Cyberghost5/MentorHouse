@@ -54,11 +54,22 @@ new class extends Component
                 Mentors
             </a>
             @auth
-            <a href="{{ route('dashboard') }}" wire:navigate
+            @php
+                $dashRoute = auth()->user()->isMentor() ? 'mentor.dashboard'
+                    : (auth()->user()->isMentee() ? 'mentee.dashboard' : 'admin.dashboard');
+                $isDash = request()->routeIs('mentor.dashboard') || request()->routeIs('mentee.dashboard') || request()->routeIs('admin.*');
+            @endphp
+            <a href="{{ route($dashRoute) }}" wire:navigate
                class="transition-colors"
-               style="color:{{ request()->routeIs('dashboard') ? '#1a3327' : '#6b7a72' }};"
-               onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='{{ request()->routeIs('dashboard') ? '#1a3327' : '#6b7a72' }}'">
+               style="color:{{ $isDash ? '#1a3327' : '#6b7a72' }};"
+               onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='{{ $isDash ? '#1a3327' : '#6b7a72' }}'">
                 Dashboard
+            </a>
+            <a href="{{ route('session-requests.index') }}" wire:navigate
+               class="transition-colors"
+               style="color:{{ request()->routeIs('session-requests.*') ? '#1a3327' : '#6b7a72' }};"
+               onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='{{ request()->routeIs('session-requests.*') ? '#1a3327' : '#6b7a72' }}'">
+                Sessions
             </a>
             <a href="{{ route('messages.index') }}" wire:navigate
                class="transition-colors"
@@ -126,7 +137,12 @@ new class extends Component
         <div class="px-4 pt-3 pb-2 space-y-1">
             <a href="{{ route('mentors.index') }}" wire:navigate class="block px-3 py-2 rounded-lg text-sm font-semibold transition" style="color:#4a5e55;" onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='#4a5e55'">Mentors</a>
             @auth
-            <a href="{{ route('dashboard') }}" wire:navigate class="block px-3 py-2 rounded-lg text-sm font-semibold transition" style="color:#4a5e55;" onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='#4a5e55'">Dashboard</a>
+            @php
+                $dashRouteMobile = auth()->user()->isMentor() ? 'mentor.dashboard'
+                    : (auth()->user()->isMentee() ? 'mentee.dashboard' : 'admin.dashboard');
+            @endphp
+            <a href="{{ route($dashRouteMobile) }}" wire:navigate class="block px-3 py-2 rounded-lg text-sm font-semibold transition" style="color:#4a5e55;" onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='#4a5e55'">Dashboard</a>
+            <a href="{{ route('session-requests.index') }}" wire:navigate class="block px-3 py-2 rounded-lg text-sm font-semibold transition" style="color:#4a5e55;" onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='#4a5e55'">Sessions</a>
             <a href="{{ route('messages.index') }}" wire:navigate class="block px-3 py-2 rounded-lg text-sm font-semibold transition" style="color:#4a5e55;" onmouseover="this.style.color='#1a3327'" onmouseout="this.style.color='#4a5e55'">Messages</a>
             @endauth
         </div>

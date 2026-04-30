@@ -8,8 +8,8 @@
         ->implode('');
 
     // Access protocol display
-    if ($profile?->session_type === 'paid' && $profile?->hourly_rate) {
-        $accessLabel = '₦' . number_format($profile->hourly_rate, 0);
+    if ($profile?->session_type === 'paid' && $profile?->one_time_fee) {
+        $accessLabel = 'One-time · ₦' . number_format($profile->one_time_fee, 0);
     } elseif ($profile?->session_type === 'project_based') {
         $accessLabel = 'Exam Required';
     } else {

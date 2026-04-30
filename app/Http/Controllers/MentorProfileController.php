@@ -6,6 +6,7 @@ use App\Http\Requests\UpdateMentorProfileRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class MentorProfileController extends Controller
@@ -36,6 +37,17 @@ class MentorProfileController extends Controller
     public function update(UpdateMentorProfileRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        $user = $request->user();
+
+        $profile = $user->mentorProfile()->firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'expertise'           => [],
+                'availability'        => 'open',
+                'session_type'        => 'free',
+                'years_of_experience' => 0,
+            ]
+        );
 
         // Normalise expertise tags: lowercase, unique, strip empties
         $data['expertise'] = array_values(
@@ -47,13 +59,33 @@ class MentorProfileController extends Controller
             )
         );
 
-        // Clear hourly_rate when session is not paid
+        // Clear fee when session type is not paid.
         if ($data['session_type'] !== 'paid') {
-            $data['hourly_rate'] = null;
+            $data['one_time_fee'] = null;
         }
 
-        $request->user()->mentorProfile()->updateOrCreate(
-            ['user_id' => $request->user()->id],
+        if ($request->hasFile('profile_photo')) {
+            if ($user->profile_photo) {
+                Storage::disk('public')->delete($user->profile_photo);
+            }
+
+            $user->update([
+                'profile_photo' => $request->file('profile_photo')->store('mentor/profile-photos', 'public'),
+            ]);
+        }
+
+        if ($request->hasFile('cover_photo')) {
+            if ($profile->cover_photo) {
+                Storage::disk('public')->delete($profile->cover_photo);
+            }
+
+            $data['cover_photo'] = $request->file('cover_photo')->store('mentor/cover-photos', 'public');
+        }
+
+        unset($data['profile_photo']);
+
+        $user->mentorProfile()->updateOrCreate(
+            ['user_id' => $user->id],
             $data
         );
 

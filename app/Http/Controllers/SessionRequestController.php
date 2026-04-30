@@ -49,14 +49,27 @@ class SessionRequestController extends Controller
     {
         $this->authorize('create', SessionRequest::class);
 
+        $alreadyPending = SessionRequest::where('mentee_id', $request->user()->id)
+            ->where('mentor_id', $mentor->id)
+            ->where('status', SessionRequest::STATUS_PENDING)
+            ->exists();
+
+        if ($alreadyPending) {
+            return redirect()
+                ->route('mentors.show', $mentor->username)
+                ->withErrors([
+                    'mentor_id' => 'You already have a pending request with this mentor. Wait for a response before requesting another session.',
+                ]);
+        }
+
         $data = $request->validated();
         $data['mentee_id'] = $request->user()->id;
         $data['mentor_id'] = $mentor->id;
         $data['session_type'] = $mentor->mentorProfile->session_type;
 
-        // Carry the fee from the mentor profile for paid sessions
+        // Carry the one-time fee from the mentor profile for paid sessions
         if ($data['session_type'] === 'paid') {
-            $data['fee_amount'] = $mentor->mentorProfile->hourly_rate;
+            $data['fee_amount'] = $mentor->mentorProfile->one_time_fee;
         }
 
         $sessionRequest = SessionRequest::create($data);

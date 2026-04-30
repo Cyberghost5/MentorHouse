@@ -15,13 +15,14 @@ class MentorProfile extends Model
         'expertise',
         'availability',
         'session_type',
-        'hourly_rate',
+        'one_time_fee',
         'years_of_experience',
+        'cover_photo',
     ];
 
     protected $casts = [
         'expertise'   => 'array',
-        'hourly_rate' => 'decimal:2',
+        'one_time_fee' => 'decimal:2',
     ];
 
     protected $attributes = [
