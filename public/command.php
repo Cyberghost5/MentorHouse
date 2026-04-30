@@ -16,9 +16,9 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
-$status = $kernel->call('optimize:clear');
+$status = $kernel->call('migrate');
 
 echo '<pre>';
-echo "optimize:clear exit code: {$status}\n";
+echo "migrate exit code: {$status}\n";
 echo $kernel->output();
 echo '</pre>';
