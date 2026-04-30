@@ -15,14 +15,19 @@
         <meta property="og:description" content="@yield('seo_og_description', 'Find your perfect mentor on MentorHouse.')">
         <meta property="og:type"        content="@yield('seo_og_type', 'website')">
         <meta property="og:url"         content="@yield('seo_og_url', url()->current())">
-        @hasSection('seo_og_image')
-            <meta property="og:image" content="@yield('seo_og_image')">
-            <meta name="twitter:image"   content="@yield('seo_og_image')">
-        @endif
+        <meta property="og:image"       content="@yield('seo_og_image', url('/og-image.svg'))">
+        <meta property="og:image:width"  content="1200">
+        <meta property="og:image:height" content="630">
         <meta name="twitter:card"        content="summary_large_image">
         <meta name="twitter:title"       content="@yield('seo_og_title', config('app.name'))">
         <meta name="twitter:description" content="@yield('seo_og_description', 'Find your perfect mentor on MentorHouse.')">
+        <meta name="twitter:image"       content="@yield('seo_og_image', url('/og-image.svg'))">
         @stack('seo_extra')
+
+        <!-- Favicon -->
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="alternate icon" href="/favicon.ico">
+        <link rel="apple-touch-icon" href="/favicon.svg">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -3,11 +3,26 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>MentorHouse  Find Your Perfect Mentor</title>
+        <title>MentorHouse &mdash; Find Your Perfect Mentor</title>
         <meta name="description" content="MentorHouse connects you with expert mentors for 1-on-1 sessions, career guidance, and skills growth.">
-        <meta property="og:title" content="MentorHouse  Find Your Perfect Mentor">
-        <meta property="og:description" content="Book sessions with vetted mentors in tech, design, business, and more.">
-        <meta property="og:type" content="website">
+        <link rel="canonical" href="{{ url('/') }}" />
+        <meta name="robots" content="index, follow">
+        <meta property="og:site_name"    content="MentorHouse">
+        <meta property="og:title"        content="MentorHouse &mdash; Find Your Perfect Mentor">
+        <meta property="og:description"  content="Book sessions with vetted mentors in tech, design, business, and more.">
+        <meta property="og:type"         content="website">
+        <meta property="og:url"          content="{{ url('/') }}">
+        <meta property="og:image"        content="{{ url('/og-image.svg') }}">
+        <meta property="og:image:width"   content="1200">
+        <meta property="og:image:height"  content="630">
+        <meta name="twitter:card"         content="summary_large_image">
+        <meta name="twitter:title"        content="MentorHouse &mdash; Find Your Perfect Mentor">
+        <meta name="twitter:description"  content="Book sessions with vetted mentors in tech, design, business, and more.">
+        <meta name="twitter:image"        content="{{ url('/og-image.svg') }}">
+        <!-- Favicon -->
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="alternate icon" href="/favicon.ico">
+        <link rel="apple-touch-icon" href="/favicon.svg">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

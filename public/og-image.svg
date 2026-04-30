@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#1a3327"/>
+
+  <!-- Subtle grid texture -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#213d2e" stroke-width="1"/>
+  </pattern>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Icon mark — centred left cluster -->
+  <g transform="translate(160, 180)">
+    <!-- Rounded square bg -->
+    <rect width="140" height="140" rx="32" fill="#c49a3c" opacity="0.15"/>
+    <!-- Cup icon -->
+    <path stroke="#c49a3c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"
+          d="M44 28h52l-6 40a25 25 0 0 1-40 0L44 28Z"/>
+    <line x1="70" y1="90" x2="70" y2="108" stroke="#c49a3c" stroke-width="7" stroke-linecap="round"/>
+    <line x1="51" y1="118" x2="89" y2="118" stroke="#c49a3c" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="340" y="290"
+        font-family="Inter, Helvetica Neue, Arial, sans-serif"
+        font-size="88" font-weight="900" letter-spacing="-3"
+        fill="#f4f1e8">MentorHouse</text>
+
+  <!-- Tagline -->
+  <text x="341" y="360"
+        font-family="Inter, Helvetica Neue, Arial, sans-serif"
+        font-size="34" font-weight="500" letter-spacing="1"
+        fill="#8aab97">Find your perfect mentor</text>
+
+  <!-- Gold accent bar -->
+  <rect x="340" y="396" width="160" height="5" rx="3" fill="#c49a3c"/>
+
+  <!-- Bottom-right decorative dots -->
+  <circle cx="1080" cy="540" r="70" fill="#c49a3c" opacity="0.06"/>
+  <circle cx="1140" cy="480" r="40" fill="#c49a3c" opacity="0.08"/>
+</svg>
