@@ -43,7 +43,7 @@
                 <div class="lg:col-span-3">
 
                     {{-- Hero banner --}}
-                    <div class="relative rounded-2xl overflow-hidden" style="background:#1a3327; height:190px;">
+                    <div class="relative rounded-2xl" style="background:#1a3327; height:190px;">
                         @if ($profile?->cover_photo)
                             <img src="{{ Storage::url($profile->cover_photo) }}"
                                  alt="{{ $user->name }} cover picture"
