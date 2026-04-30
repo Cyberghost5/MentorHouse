@@ -16,9 +16,9 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 
-$status = $kernel->call('storage:link');
+$status = $kernel->call('migrate:fresh --seed');
 
 echo '<pre>';
-echo "storage:link exit code: {$status}\n";
+echo "migrate:fresh --seed exit code: {$status}\n";
 echo $kernel->output();
 echo '</pre>';
