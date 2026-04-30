@@ -40,9 +40,16 @@
             @endforeach
         </nav>
 
-        <div class="px-5 py-4 text-xs" style="border-top:1px solid #2d5240; color:#4a5e55;">
-            <a href="{{ route('dashboard') }}" class="transition" style="color:#4a5e55;"
+        <div class="px-5 py-4 space-y-2 text-xs" style="border-top:1px solid #2d5240; color:#4a5e55;">
+            <a href="{{ route('dashboard') }}" class="block transition" style="color:#4a5e55;"
                onmouseover="this.style.color='#f4f1e8'" onmouseout="this.style.color='#4a5e55'">← Back to app</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="transition" style="color:#4a5e55; background:none; border:none; padding:0; cursor:pointer; font-size:inherit;"
+                        onmouseover="this.style.color='#f4f1e8'" onmouseout="this.style.color='#4a5e55'">
+                    Log out
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -52,7 +59,18 @@
             <h1 class="text-lg font-black" style="color:#1a3327;">
                 @yield('title', 'Admin Panel')
             </h1>
-            <span class="text-sm" style="color:#6b7a72;">{{ auth()->user()->name }}</span>
+            <div class="flex items-center gap-4">
+                <span class="text-sm" style="color:#6b7a72;">{{ auth()->user()->name }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="text-sm font-semibold px-3 py-1 rounded-lg transition"
+                            style="border:1.5px solid #1a3327; color:#1a3327; background:transparent;"
+                            onmouseover="this.style.background='#1a3327'; this.style.color='#f4f1e8';"
+                            onmouseout="this.style.background='transparent'; this.style.color='#1a3327';">
+                        Log out
+                    </button>
+                </form>
+            </div>
         </header>
 
         <main class="flex-1 p-6" style="background:#f4f1e8;">
