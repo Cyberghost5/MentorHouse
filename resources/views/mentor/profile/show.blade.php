@@ -42,8 +42,8 @@
 @push('seo_extra')
 <script type="application/ld+json">
 {
-  "@context": "https://schema.org",
-  "@type": "Person",
+    "@@context": "https://schema.org",
+    "@@type": "Person",
   "name": {{ Js::from($user->name) }},
   "url": {{ Js::from($canonicalUrl) }},
   "jobTitle": {{ Js::from($user->headline ?? '') }},
@@ -53,7 +53,7 @@
   @endif
   @if ($reviewCount > 0)
   "aggregateRating": {
-    "@type": "AggregateRating",
+    "@@type": "AggregateRating",
     "ratingValue": "{{ number_format($avgRating, 1) }}",
     "reviewCount": "{{ $reviewCount }}",
     "bestRating": "5",
