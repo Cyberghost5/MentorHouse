@@ -14,6 +14,8 @@ class UpdateMentorProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'headline'            => ['nullable', 'string', 'max:100'],
+            'bio'                 => ['nullable', 'string', 'max:2000'],
             'expertise'           => ['required', 'array', 'min:1'],
             'expertise.*'         => ['string', 'max:60'],
             'availability'        => ['required', 'in:open,closed'],

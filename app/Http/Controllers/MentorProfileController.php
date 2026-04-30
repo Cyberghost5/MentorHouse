@@ -64,15 +64,24 @@ class MentorProfileController extends Controller
             $data['one_time_fee'] = null;
         }
 
+        // Save user-level fields
+        $userFields = array_filter([
+            'headline' => $data['headline'] ?? null,
+            'bio'      => $data['bio'] ?? null,
+        ], fn ($v) => $v !== null);
+
         if ($request->hasFile('profile_photo')) {
             if ($user->profile_photo) {
                 Storage::disk('public')->delete($user->profile_photo);
             }
-
-            $user->update([
-                'profile_photo' => $request->file('profile_photo')->store('mentor/profile-photos', 'public'),
-            ]);
+            $userFields['profile_photo'] = $request->file('profile_photo')->store('mentor/profile-photos', 'public');
         }
+
+        if (!empty($userFields)) {
+            $user->update($userFields);
+        }
+
+        unset($data['headline'], $data['bio']);
 
         if ($request->hasFile('cover_photo')) {
             if ($profile->cover_photo) {

@@ -9,7 +9,7 @@
 
     // Access protocol display
     if ($profile?->session_type === 'paid' && $profile?->one_time_fee) {
-        $accessLabel = 'One-time · ₦' . number_format($profile->one_time_fee, 0);
+        $accessLabel = '₦' . number_format($profile->one_time_fee, 0);
     } elseif ($profile?->session_type === 'project_based') {
         $accessLabel = 'Exam Required';
     } else {

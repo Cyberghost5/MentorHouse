@@ -1,6 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-black text-xl" style="color:#1a3327;">Manage Mentor Profile</h2>
+        <div class="flex items-center justify-between">
+            <h2 class="font-black text-xl" style="color:#1a3327;">Manage Mentor Profile</h2>
+            <a href="{{ route('mentors.show', auth()->user()->username) }}"
+               class="px-4 py-2 rounded-xl text-sm font-bold transition"
+               style="background:white; border:1px solid #d6cfbe; color:#1a3327;"
+               onmouseover="this.style.borderColor='#1a3327'" onmouseout="this.style.borderColor='#d6cfbe'">
+                👁 View public profile
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-10">
@@ -56,6 +64,39 @@
                             <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                {{-- Headline --}}
+                <div>
+                    <label for="headline" class="block text-sm font-semibold mb-2" style="color:#1a3327;">Headline <span class="font-normal" style="color:#6b7a72;">(short tagline shown on your card)</span></label>
+                    <input type="text"
+                           name="headline"
+                           id="headline"
+                           maxlength="100"
+                           value="{{ old('headline', auth()->user()->headline) }}"
+                           placeholder="e.g. Senior Backend Engineer · 8 yrs"
+                           class="w-full rounded-xl px-4 py-2.5 text-sm transition @error('headline') border-red-400 @enderror"
+                           style="border:1px solid #d6cfbe; color:#1a3327;"
+                           onfocus="this.style.borderColor='#1a3327'" onblur="this.style.borderColor='#d6cfbe'" />
+                    @error('headline')
+                        <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Bio --}}
+                <div>
+                    <label for="bio" class="block text-sm font-semibold mb-2" style="color:#1a3327;">Bio <span class="font-normal" style="color:#6b7a72;">(shown on your public profile)</span></label>
+                    <textarea name="bio"
+                              id="bio"
+                              rows="5"
+                              maxlength="2000"
+                              placeholder="Tell mentees about your background, what you're passionate about, and how you can help…"
+                              class="w-full rounded-xl px-4 py-2.5 text-sm transition resize-none @error('bio') border-red-400 @enderror"
+                              style="border:1px solid #d6cfbe; color:#1a3327;"
+                              onfocus="this.style.borderColor='#1a3327'" onblur="this.style.borderColor='#d6cfbe'">{{ old('bio', auth()->user()->bio) }}</textarea>
+                    @error('bio')
+                        <p class="mt-1.5 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Expertise / skills --}}
@@ -118,7 +159,7 @@
 
                 {{-- One-time fee (shown only when session_type = paid) --}}
                 <div id="one-time-fee-field" class="{{ old('session_type', $profile->session_type) === 'paid' ? '' : 'hidden' }}">
-                    <label for="one_time_fee" class="block text-sm font-semibold mb-2" style="color:#1a3327;">One-Time Fee (₦)</label>
+                    <label for="one_time_fee" class="block text-sm font-semibold mb-2" style="color:#1a3327;">Fee (₦)</label>
                     <div class="relative w-48">
                         <span class="absolute inset-y-0 left-3 flex items-center text-sm" style="color:#6b7a72;">₦</span>
                         <input type="number" name="one_time_fee" id="one_time_fee" min="0" max="9999999" step="1"

@@ -84,7 +84,7 @@
                 @php
                     $typeInfo = match($profile->session_type) {
                         'free'          => ['label' => 'Free Session', 'color' => 'bg-green-50 text-green-700 border-green-200'],
-                        'paid'          => ['label' => 'Paid · One-Time Fee ₦' . number_format($profile->one_time_fee, 0), 'color' => 'bg-amber-50 text-amber-700 border-amber-200'],
+                        'paid'          => ['label' => 'Paid · Fee ₦' . number_format($profile->one_time_fee, 0), 'color' => 'bg-amber-50 text-amber-700 border-amber-200'],
                         'project_based' => ['label' => 'Project-based', 'color' => 'bg-blue-50 text-blue-700 border-blue-200'],
                         default         => ['label' => ucfirst($profile->session_type), 'color' => 'bg-gray-50 text-gray-600 border-gray-200'],
                     };

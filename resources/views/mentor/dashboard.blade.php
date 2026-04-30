@@ -46,6 +46,12 @@
                    onmouseover="this.style.borderColor='#1a3327'" onmouseout="this.style.borderColor='#d6cfbe'">
                     ✏️ Edit Profile
                 </a>
+                <a href="{{ route('mentors.show', auth()->user()->username) }}"
+                   class="px-5 py-2.5 rounded-xl text-sm font-bold transition"
+                   style="background:white; border:1px solid #d6cfbe; color:#1a3327;"
+                   onmouseover="this.style.borderColor='#1a3327'" onmouseout="this.style.borderColor='#d6cfbe'">
+                    👁 View Profile
+                </a>
                 <a href="{{ route('messages.index') }}"
                    class="px-5 py-2.5 rounded-xl text-sm font-bold transition"
                    style="background:white; border:1px solid #d6cfbe; color:#1a3327;"
