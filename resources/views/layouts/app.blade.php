@@ -5,13 +5,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'MentorHouse') }}</title>
-        <meta name="description" content="MentorHouse — connect with expert mentors for 1-on-1 sessions, career guidance, and project-based learning.">
+        {{-- SEO — override per-page with @section('seo_*', '...') in child views --}}
+        <title>@yield('seo_title', config('app.name', 'MentorHouse'))</title>
+        <meta name="description" content="@yield('seo_description', 'MentorHouse — connect with expert mentors for 1-on-1 sessions, career guidance, and project-based learning.')">
+        <link rel="canonical" href="@yield('seo_canonical', url()->current())" />
         <meta name="robots" content="index, follow">
-        <meta property="og:title"       content="{{ config('app.name') }}">
-        <meta property="og:description" content="Find your perfect mentor on MentorHouse.">
-        <meta property="og:type"        content="website">
-        <meta property="og:url"         content="{{ url()->current() }}">
+        <meta property="og:site_name"   content="{{ config('app.name') }}">
+        <meta property="og:title"       content="@yield('seo_og_title', config('app.name'))">
+        <meta property="og:description" content="@yield('seo_og_description', 'Find your perfect mentor on MentorHouse.')">
+        <meta property="og:type"        content="@yield('seo_og_type', 'website')">
+        <meta property="og:url"         content="@yield('seo_og_url', url()->current())">
+        @hasSection('seo_og_image')
+            <meta property="og:image" content="@yield('seo_og_image')">
+            <meta name="twitter:image"   content="@yield('seo_og_image')">
+        @endif
+        <meta name="twitter:card"        content="summary_large_image">
+        <meta name="twitter:title"       content="@yield('seo_og_title', config('app.name'))">
+        <meta name="twitter:description" content="@yield('seo_og_description', 'Find your perfect mentor on MentorHouse.')">
+        @stack('seo_extra')
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

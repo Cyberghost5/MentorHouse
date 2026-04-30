@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\WithdrawalAdminController;
 use App\Http\Controllers\MentorProfileController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\PaymentController;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
 Route::view('/', 'welcome');
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::get('dashboard', function () {
     $user = auth()->user();

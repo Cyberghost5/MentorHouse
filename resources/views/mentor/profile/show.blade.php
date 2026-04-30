@@ -15,7 +15,57 @@
     $menteesCount = \App\Models\SessionRequest::where('mentor_id', $user->id)
         ->where('status', 'accepted')
         ->count();
+
+    // SEO helpers
+    $seoTitle       = $user->name . ($user->headline ? ' — ' . $user->headline : '') . ' | MentorHouse';
+    $expertiseLine  = !empty($profile?->expertise) ? implode(', ', array_slice($profile->expertise, 0, 5)) : '';
+    $seoDescription = 'Book a 1-on-1 mentoring session with ' . $user->name
+        . ($user->headline ? ', ' . $user->headline : '')
+        . ($expertiseLine ? '. Expertise: ' . $expertiseLine . '.' : '.')
+        . ' ' . ($profile?->years_of_experience ? $profile->years_of_experience . '+ years of experience.' : '')
+        . ' Verified mentor on MentorHouse.';
+    $canonicalUrl   = route('mentors.show', $user->username);
+    $ogImage        = $user->profile_photo
+        ? \Illuminate\Support\Facades\Storage::url($user->profile_photo)
+        : null;
 @endphp
+
+@section('seo_title', $seoTitle)
+@section('seo_description', Str::limit($seoDescription, 160))
+@section('seo_canonical', $canonicalUrl)
+@section('seo_og_title', $seoTitle)
+@section('seo_og_description', Str::limit($seoDescription, 200))
+@section('seo_og_type', 'profile')
+@section('seo_og_url', $canonicalUrl)
+@if ($ogImage)
+@section('seo_og_image', url($ogImage))
+@endif
+
+@push('seo_extra')
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": {{ Js::from($user->name) }},
+  "url": {{ Js::from($canonicalUrl) }},
+  "jobTitle": {{ Js::from($user->headline ?? '') }},
+  "description": {{ Js::from($seoDescription) }},
+  @if ($ogImage)
+  "image": {{ Js::from(url($ogImage)) }},
+  @endif
+  @if ($reviewCount > 0)
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ number_format($avgRating, 1) }}",
+    "reviewCount": "{{ $reviewCount }}",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  @endif
+  "knowsAbout": {!! json_encode(array_values($profile?->expertise ?? [])) !!}
+}
+</script>
+@endpush
 
 <x-app-layout>
     <div style="background:#f4f1e8; min-height:100vh;">

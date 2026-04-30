@@ -6,6 +6,7 @@ use App\Http\Requests\UpdateMentorProfileRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -97,6 +98,9 @@ class MentorProfileController extends Controller
             ['user_id' => $user->id],
             $data
         );
+
+        // Bust the sitemap cache so the new profile appears immediately
+        Cache::forget('sitemap_xml');
 
         return redirect()->route('mentor.profile.edit')
             ->with('status', 'Profile updated successfully.');
