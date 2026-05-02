@@ -28,7 +28,7 @@
                                 {{ str_repeat('★', $review->rating) }}<span style="color:#d6cfbe;">{{ str_repeat('★', 5 - $review->rating) }}</span>
                             </span>
                         </td>
-                        <td class="px-5 py-3 max-w-xs truncate" style="color:#6b7a72;">{{ $review->comment ?? '—' }}</td>
+                        <td class="px-5 py-3 max-w-xs truncate" style="color:#6b7a72;">{{ $review->comment ?? '-' }}</td>
                         <td class="px-5 py-3" style="color:#6b7a72;">{{ $review->created_at->format('M j, Y') }}</td>
                         <td class="px-5 py-3">
                             <form method="POST" action="{{ route('admin.reviews.destroy', $review) }}"

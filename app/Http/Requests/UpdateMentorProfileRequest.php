@@ -24,6 +24,7 @@ class UpdateMentorProfileRequest extends FormRequest
             'years_of_experience' => ['required', 'integer', 'min:0', 'max:50'],
             'profile_photo'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'cover_photo'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'country'             => ['nullable', 'string', 'size:2'],
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
 class UpdateSessionRequestRequest extends FormRequest
@@ -13,6 +14,14 @@ class UpdateSessionRequestRequest extends FormRequest
 
         return $this->user()->id === $sessionRequest->mentor_id
             && $sessionRequest->isPending();
+    }
+
+    protected function failedAuthorization(): void
+    {
+        throw new HttpResponseException(
+            redirect()->route('session-requests.index')
+                ->with('error', 'You can only accept or decline requests that are still pending and assigned to you.')
+        );
     }
 
     public function rules(): array

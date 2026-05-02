@@ -19,6 +19,15 @@
     // Avatar background colours (cycle through a set)
     $colours = ['#2d5240','#1a3327','#4a7c5a','#355c3e','#213d2e'];
     $bg = $colours[abs(crc32($mentor->name)) % count($colours)];
+
+    // Country flag emoji from ISO 3166-1 alpha-2 code
+    $countryCode = $profile?->country;
+    $flagEmoji = $countryCode
+        ? implode('', array_map(
+              fn ($c) => mb_chr(0x1F1E6 + ord($c) - ord('A')),
+              str_split(strtoupper($countryCode))
+          ))
+        : null;
 @endphp
 
 <div style="background:white; border-radius:1rem; padding:1.5rem; display:flex; flex-direction:column; gap:0; box-shadow:0 1px 3px rgba(0,0,0,.06); border:1px solid #e6e0d0;">
@@ -34,8 +43,10 @@
                     {{ $initials }}
                 </div>
             @endif
-            {{-- Gold star badge --}}
-            <span style="position:absolute; bottom:-2px; right:-2px; width:22px; height:22px; border-radius:50%; background:#c49a3c; display:flex; align-items:center; justify-content:center; font-size:11px; color:white; border:2px solid white;">🌟</span>
+            {{-- Country flag badge --}}
+            @if ($flagEmoji)
+                <span style="position:absolute; bottom:-2px; right:-2px; width:22px; height:22px; border-radius:50%; background:white; display:flex; align-items:center; justify-content:center; font-size:13px; border:2px solid white; box-shadow:0 1px 3px rgba(0,0,0,.15);">{{ $flagEmoji }}</span>
+            @endif
         </div>
 
         <div style="min-width:0;">

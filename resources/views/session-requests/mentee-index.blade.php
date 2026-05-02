@@ -12,6 +12,12 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="px-5 py-3 rounded-xl text-sm font-medium" style="background:#fff0f0; border:1px solid #fca5a5; color:#dc2626;">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="flex items-center justify-between">
                 <p class="text-sm" style="color:#6b7a72;">{{ $requests->total() }} request(s) total</p>
                 <a href="{{ route('mentors.index') }}" class="text-sm font-semibold transition" style="color:#1a3327;"

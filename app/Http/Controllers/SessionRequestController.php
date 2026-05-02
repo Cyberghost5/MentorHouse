@@ -123,11 +123,11 @@ class SessionRequestController extends Controller
      */
     public function complete(Request $request, SessionRequest $sessionRequest): RedirectResponse
     {
-        abort_unless(
-            $request->user()->id === $sessionRequest->mentor_id
-                && $sessionRequest->isAccepted(),
-            403
-        );
+        if ($request->user()->id !== $sessionRequest->mentor_id || ! $sessionRequest->isAccepted()) {
+            return redirect()
+                ->route('session-requests.index')
+                ->with('error', 'You can only mark sessions as completed once they have been accepted.');
+        }
 
         $sessionRequest->update(['status' => SessionRequest::STATUS_COMPLETED]);
 
@@ -145,7 +145,11 @@ class SessionRequestController extends Controller
      */
     public function cancel(Request $request, SessionRequest $sessionRequest): RedirectResponse
     {
-        $this->authorize('cancel', $sessionRequest);
+        if ($request->user()->id !== $sessionRequest->mentee_id || ! $sessionRequest->isPending()) {
+            return redirect()
+                ->route('session-requests.index')
+                ->with('error', 'You can only cancel your own requests while they are still pending.');
+        }
 
         $sessionRequest->update(['status' => SessionRequest::STATUS_CANCELLED]);
 

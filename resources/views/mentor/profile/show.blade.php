@@ -16,8 +16,17 @@
         ->where('status', 'accepted')
         ->count();
 
+    // Country flag emoji
+    $countryCode = $profile?->country;
+    $flagEmoji = $countryCode
+        ? implode('', array_map(
+              fn ($c) => mb_chr(0x1F1E6 + ord($c) - ord('A')),
+              str_split(strtoupper($countryCode))
+          ))
+        : null;
+
     // SEO helpers
-    $seoTitle       = $user->name . ($user->headline ? ' — ' . $user->headline : '') . ' | MentorHouse';
+    $seoTitle       = $user->name . ($user->headline ? ' - ' . $user->headline : '') . ' | MentorHouse';
     $expertiseLine  = !empty($profile?->expertise) ? implode(', ', array_slice($profile->expertise, 0, 5)) : '';
     $seoDescription = 'Book a 1-on-1 mentoring session with ' . $user->name
         . ($user->headline ? ', ' . $user->headline : '')
@@ -150,6 +159,13 @@
                                 <span class="text-sm font-medium" style="color:#6b7a72;">
                                     {{ $profile->years_of_experience }}+ yrs experience
                                 </span>
+                                @if ($flagEmoji)
+                                    <span title="{{ $profile->country }}" style="font-size:1.1rem; line-height:1;">{{ $flagEmoji }}</span>
+                                @endif
+                            </div>
+                        @elseif ($flagEmoji)
+                            <div class="mt-3">
+                                <span title="{{ $profile->country }}" style="font-size:1.1rem; line-height:1;">{{ $flagEmoji }}</span>
                             </div>
                         @endif
 

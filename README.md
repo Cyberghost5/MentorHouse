@@ -109,16 +109,16 @@ App will be at [http://localhost:8000](http://localhost:8000).
 |---|---|
 | **mentee** | Browse mentors, send session requests, pay for sessions, chat, leave reviews |
 | **mentor** | Manage profile, accept/decline requests, mark sessions complete, view earnings, chat |
-| **admin** | Full admin panel at `/admin` — users, sessions, reviews, stats, payment gateway settings |
+| **admin** | Full admin panel at `/admin` - users, sessions, reviews, stats, payment gateway settings |
 
 ### Key Features
 
-- **Mentor discovery** — search by name/skill, filter by session type, paginated
-- **Session requests** — adaptive form (free / paid / project-based), status lifecycle
-- **Messaging** — per-conversation chat with Livewire 3s polling, unread badge in nav
-- **Payments** — Paystack & Korapay integration; active gateway configurable from admin panel
-- **Reviews** — star rating + comment, only after completed sessions; displayed on mentor profile
-- **Admin panel** — `/admin` with stats, user management (suspend/activate), session/review moderation, gateway settings
+- **Mentor discovery** - search by name/skill, filter by session type, paginated
+- **Session requests** - adaptive form (free / paid / project-based), status lifecycle
+- **Messaging** - per-conversation chat with Livewire 3s polling, unread badge in nav
+- **Payments** - Paystack & Korapay integration; active gateway configurable from admin panel
+- **Reviews** - star rating + comment, only after completed sessions; displayed on mentor profile
+- **Admin panel** - `/admin` with stats, user management (suspend/activate), session/review moderation, gateway settings
 
 ---
 
@@ -130,13 +130,13 @@ The active gateway is stored in the `settings` table and can be changed at **Adm
 
 1. Create an account at [paystack.com](https://paystack.com)
 2. Copy your **Secret Key** and **Public Key**
-3. Add to `.env` — add webhook URL `https://your-domain.com/payments/webhook` in dashboard
+3. Add to `.env` - add webhook URL `https://your-domain.com/payments/webhook` in dashboard
 
 ### Korapay
 
 1. Create an account at [korahq.com](https://korahq.com)
 2. Copy your **Secret Key**, **Public Key**, and **Encryption Key**
-3. Add to `.env` — add webhook URL `https://your-domain.com/payments/webhook` in dashboard
+3. Add to `.env` - add webhook URL `https://your-domain.com/payments/webhook` in dashboard
 
 After changing gateway keys, run:
 
@@ -177,7 +177,7 @@ php artisan config:clear && php artisan cache:clear && php artisan view:clear
 - **Frontend**: Livewire 3 + Volt, Alpine.js, Tailwind CSS
 - **Auth**: Laravel Breeze (Livewire stack)
 - **Database**: MySQL 8
-- **Payments**: Paystack API & Korapay API (direct HTTP via Laravel `Http` facade — no Cashier required)
+- **Payments**: Paystack API & Korapay API (direct HTTP via Laravel `Http` facade - no Cashier required)
 - **Notifications**: Database + Mail channels
 
 <p align="center">

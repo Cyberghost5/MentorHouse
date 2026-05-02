@@ -18,11 +18,14 @@ class MentorProfile extends Model
         'one_time_fee',
         'years_of_experience',
         'cover_photo',
+        'is_approved',
+        'country',
     ];
 
     protected $casts = [
         'expertise'   => 'array',
         'one_time_fee' => 'decimal:2',
+        'is_approved' => 'boolean',
     ];
 
     protected $attributes = [
@@ -45,6 +48,11 @@ class MentorProfile extends Model
     public function isOpen(): bool
     {
         return $this->availability === 'open';
+    }
+
+    public function isApproved(): bool
+    {
+        return (bool) $this->is_approved;
     }
 
     public function sessionTypeLabel(): string

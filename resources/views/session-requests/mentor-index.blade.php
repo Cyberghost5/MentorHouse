@@ -12,6 +12,12 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="px-5 py-3 rounded-xl text-sm font-medium" style="background:#fff0f0; border:1px solid #fca5a5; color:#dc2626;">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             @if ($requests->isEmpty())
                 <div class="text-center py-20" style="color:#6b7a72;">
                     <svg class="mx-auto mb-4 w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">

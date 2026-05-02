@@ -28,7 +28,7 @@ new #[Layout('layouts.app')] class extends Component
         $query = User::query()
             ->where('role', 'mentor')
             ->with('mentorProfile')
-            ->whereHas('mentorProfile', fn ($q) => $q->where('availability', 'open'));
+            ->whereHas('mentorProfile', fn ($q) => $q->where('availability', 'open')->where('is_approved', true));
 
         if ($this->search !== '') {
             $term = '%' . $this->search . '%';
@@ -55,7 +55,7 @@ new #[Layout('layouts.app')] class extends Component
         // Collect all unique skills across current result set for the filter chips
         $allSkills = User::query()
             ->where('role', 'mentor')
-            ->whereHas('mentorProfile', fn ($q) => $q->where('availability', 'open'))
+            ->whereHas('mentorProfile', fn ($q) => $q->where('availability', 'open')->where('is_approved', true))
             ->with('mentorProfile:id,user_id,expertise')
             ->get()
             ->flatMap(fn ($u) => $u->mentorProfile?->expertise ?? [])

@@ -64,7 +64,7 @@ class UserSeeder extends Seeder
                     'name'     => 'Iyin Aboyeji',
                     'email'    => 'iyin@mentorhouse.test',
                     'headline' => 'Co-founder Flutterwave & Andela · Partner, Future Africa',
-                    'bio'      => 'I co-founded both Andela and Flutterwave — two of Africa\'s most recognised technology companies. I now run Future Africa, investing in African tech founders. I enjoy mentoring early-stage entrepreneurs building category-defining companies on the continent.',
+                    'bio'      => 'I co-founded both Andela and Flutterwave - two of Africa\'s most recognised technology companies. I now run Future Africa, investing in African tech founders. I enjoy mentoring early-stage entrepreneurs building category-defining companies on the continent.',
                 ],
                 'profile' => [
                     'expertise'           => ['Entrepreneurship', 'Fundraising', 'Venture Capital', 'Team Building', 'Product-Market Fit'],

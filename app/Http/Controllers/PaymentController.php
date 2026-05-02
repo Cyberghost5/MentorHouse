@@ -68,7 +68,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Confirm a simulated payment — marks it paid immediately.
+     * Confirm a simulated payment - marks it paid immediately.
      */
     public function confirmSimulate(Request $request, SessionRequest $sessionRequest): RedirectResponse
     {
@@ -127,7 +127,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Webhook endpoint — called directly by Paystack or Korapay.
+     * Webhook endpoint - called directly by Paystack or Korapay.
      */
     public function webhook(Request $request): Response
     {

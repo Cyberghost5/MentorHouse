@@ -95,7 +95,7 @@ Route::middleware(['auth', 'mentee'])->group(function () {
         ->name('payments.callback');
 });
 
-// ─── Payment webhook (no auth — called by gateway) ────────────────────────
+// ─── Payment webhook (no auth - called by gateway) ────────────────────────
 Route::post('/payments/webhook', [PaymentController::class, 'webhook'])
     ->name('payments.webhook');
 
@@ -105,6 +105,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users',    [AdminController::class, 'users'])->name('users');
     Route::patch('/users/{user}/suspend',  [AdminController::class, 'suspend'])->name('users.suspend');
     Route::patch('/users/{user}/activate', [AdminController::class, 'activate'])->name('users.activate');
+    Route::patch('/users/{user}/approve',  [AdminController::class, 'approveMentor'])->name('users.approve');
+    Route::patch('/users/{user}/reject',   [AdminController::class, 'rejectMentor'])->name('users.reject');
+    Route::post('/users/{user}/impersonate', [AdminController::class, 'impersonate'])->name('users.impersonate');
     Route::get('/sessions', [AdminController::class, 'sessions'])->name('sessions');
     Route::get('/reviews',  [AdminController::class, 'reviews'])->name('reviews');
     Route::delete('/reviews/{review}', [AdminController::class, 'deleteReview'])->name('reviews.destroy');
@@ -115,5 +118,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/withdrawals/{withdrawal}/approve', [WithdrawalAdminController::class, 'approve'])->name('withdrawals.approve');
     Route::patch('/withdrawals/{withdrawal}/reject',  [WithdrawalAdminController::class, 'reject'])->name('withdrawals.reject');
 });
+
+// Stop impersonating (auth only, no admin middleware — current user IS the impersonated user)
+Route::post('/admin/impersonate/stop', [AdminController::class, 'stopImpersonating'])
+    ->middleware('auth')
+    ->name('admin.impersonate.stop');
 
 require __DIR__.'/auth.php';

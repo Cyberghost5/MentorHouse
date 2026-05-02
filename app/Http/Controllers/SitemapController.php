@@ -50,7 +50,7 @@ class SitemapController extends Controller
             $loc        = route('mentors.show', $mentor->username);
             $lastmod    = $mentor->updated_at->toAtomString();
             $expertise  = implode(', ', array_slice($mentor->mentorProfile?->expertise ?? [], 0, 5));
-            $title      = $mentor->name . ($mentor->headline ? ' — ' . $mentor->headline : '');
+            $title      = $mentor->name . ($mentor->headline ? ' - ' . $mentor->headline : '');
 
             $lines[] = '  <url>';
             $lines[] = '    <loc>' . e($loc) . '</loc>';

@@ -48,7 +48,7 @@
                             </span>
                         </td>
                         <td class="px-5 py-3" style="color:#4a5e55;">
-                            {{ $s->fee_amount ? '₦' . number_format($s->fee_amount, 0) : '—' }}
+                            {{ $s->fee_amount ? '₦' . number_format($s->fee_amount, 0) : '-' }}
                         </td>
                         <td class="px-5 py-3" style="color:#6b7a72;">{{ $s->created_at->format('M j, Y') }}</td>
                     </tr>

@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Forms;
 
-use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -30,14 +29,6 @@ class LoginForm extends Form
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
-
-        $user = User::where('email', Str::lower(trim($this->email)))->first();
-
-        if ($user && ! $user->hasVerifiedEmail()) {
-            throw ValidationException::withMessages([
-                'form.email' => 'Please verify your email address before logging in.',
-            ]);
-        }
 
         if (! Auth::attempt($this->only(['email', 'password']), $this->remember)) {
             RateLimiter::hit($this->throttleKey());

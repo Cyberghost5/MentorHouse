@@ -121,6 +121,11 @@ class MentorProfileController extends Controller
 
         $profile = $user->mentorProfile;
 
+        // Non-admins cannot view unapproved mentor profiles
+        if (! $profile?->is_approved && ! (auth()->check() && auth()->user()->isAdmin())) {
+            abort(404);
+        }
+
         return view('mentor.profile.show', compact('user', 'profile'));
     }
 }

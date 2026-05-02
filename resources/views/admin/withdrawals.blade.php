@@ -74,7 +74,7 @@
                                 <td class="px-5 py-4 font-bold" style="color:#1a3327;">₦{{ number_format($w->amount, 0) }}</td>
                                 <td class="px-5 py-4">
                                     <p style="color:#1a3327;">{{ $w->bank_name }}</p>
-                                    <p class="text-xs" style="color:#6b7a72;">{{ $w->account_number }} — {{ $w->account_name }}</p>
+                                    <p class="text-xs" style="color:#6b7a72;">{{ $w->account_number }} - {{ $w->account_name }}</p>
                                 </td>
                                 <td class="px-5 py-4">
                                     <span class="px-3 py-1 rounded-full text-xs font-bold"

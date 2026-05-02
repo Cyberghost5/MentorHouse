@@ -5,9 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        {{-- SEO — override per-page with @section('seo_*', '...') in child views --}}
+        {{-- SEO - override per-page with @section('seo_*', '...') in child views --}}
         <title>@yield('seo_title', config('app.name', 'MentorHouse'))</title>
-        <meta name="description" content="@yield('seo_description', 'MentorHouse — connect with expert mentors for 1-on-1 sessions, career guidance, and project-based learning.')">
+        <meta name="description" content="@yield('seo_description', 'MentorHouse - connect with expert mentors for 1-on-1 sessions, career guidance, and project-based learning.')">
         <link rel="canonical" href="@yield('seo_canonical', url()->current())" />
         <meta name="robots" content="index, follow">
         <meta property="og:site_name"   content="{{ config('app.name') }}">
@@ -39,6 +39,20 @@
         @livewireStyles
     </head>
     <body class="font-sans antialiased" style="background-color:#f4f1e8;">
+
+        {{-- Impersonation banner --}}
+        @if (session()->has('impersonating_admin_id'))
+            <div style="background:#7c3aed; color:#fff; padding:.6rem 1rem; font-size:.82rem; font-weight:600; display:flex; align-items:center; justify-content:center; gap:1.5rem; position:sticky; top:0; z-index:9999;">
+                <span>👤 Impersonating <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->role }})</span>
+                <form method="POST" action="{{ route('admin.impersonate.stop') }}" style="margin:0;">
+                    @csrf
+                    <button type="submit" style="background:rgba(255,255,255,.2); border:1px solid rgba(255,255,255,.4); color:#fff; padding:.25rem .8rem; border-radius:6px; font-size:.78rem; font-weight:700; cursor:pointer;">
+                        Stop Impersonating
+                    </button>
+                </form>
+            </div>
+        @endif
+
         <div class="min-h-screen flex flex-col">
             <livewire:layout.navigation />
 
@@ -53,6 +67,13 @@
 
             <!-- Page Content -->
             <main class="flex-1">
+                @if (session('status') === 'email-verified')
+                    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                        <div class="rounded-xl px-4 py-3 text-sm font-medium" style="background:#e6f4ee; border:1px solid #a3d4b8; color:#1a3327;">
+                            Your email has been verified. Welcome to MentorHouse!
+                        </div>
+                    </div>
+                @endif
                 {{ $slot }}
             </main>
 
@@ -62,7 +83,7 @@
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div class="flex items-center gap-2">
                             <span class="font-black text-lg" style="color:#f4f1e8;">MentorHouse</span>
-                            <span class="text-sm" style="color:#4a5e55;">— Find your perfect mentor</span>
+                            <span class="text-sm" style="color:#4a5e55;">- Find your perfect mentor</span>
                         </div>
                         <nav class="flex flex-wrap gap-6 text-xs font-semibold tracking-widest uppercase" style="color:#4a5e55;">
                             <a href="{{ route('mentors.index') }}" style="color:#4a5e55;" onmouseover="this.style.color='#c49a3c'" onmouseout="this.style.color='#4a5e55'">Find Mentors</a>

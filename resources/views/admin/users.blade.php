@@ -3,6 +3,23 @@
 @section('title', 'Users')
 
 @section('content')
+
+@if (session('status'))
+    <div class="mb-5 px-5 py-3 rounded-xl text-sm font-medium" style="background:rgba(196,154,60,.1); border:1px solid rgba(196,154,60,.3); color:#8a6a1a;">
+        {{ session('status') }}
+    </div>
+@endif
+
+{{-- Pending approval alert --}}
+@if ($pendingApprovalCount > 0)
+    <div class="mb-5 flex items-center justify-between px-5 py-3 rounded-xl text-sm font-medium"
+         style="background:#fff7ed; border:1px solid #fdba74; color:#c2410c;">
+        <span>⏳ <strong>{{ $pendingApprovalCount }}</strong> mentor profile(s) awaiting approval</span>
+        <a href="{{ request()->fullUrlWithQuery(['pending_approval' => 1, 'role' => 'mentor']) }}"
+           style="color:#c2410c; text-decoration:underline; font-weight:700;">View pending →</a>
+    </div>
+@endif
+
 {{-- Filters --}}
 <form method="GET" class="flex flex-wrap gap-3 mb-6">
     <input type="text" name="search" value="{{ request('search') }}"
@@ -18,6 +35,11 @@
         <option value="mentee"  @selected(request('role') === 'mentee')>Mentees</option>
         <option value="admin"   @selected(request('role') === 'admin')>Admins</option>
     </select>
+    <label class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm cursor-pointer"
+           style="border:1px solid #d6cfbe; color:#1a3327;">
+        <input type="checkbox" name="pending_approval" value="1" @checked(request('pending_approval'))>
+        Pending approval only
+    </label>
     <button type="submit" class="px-4 py-2 rounded-xl text-sm font-bold transition"
             style="background:#1a3327; color:#f4f1e8;"
             onmouseover="this.style.background='#0f2219'" onmouseout="this.style.background='#1a3327'">
@@ -44,7 +66,16 @@
             <tbody>
                 @foreach ($users as $user)
                     <tr style="border-bottom:1px solid #f4f1e8;">
-                        <td class="px-5 py-3 font-medium" style="color:#1a3327;">{{ $user->name }}</td>
+                        <td class="px-5 py-3 font-medium" style="color:#1a3327;">
+                            {{ $user->name }}
+                            @if ($user->isMentor() && $user->mentorProfile)
+                                @if (! $user->mentorProfile->is_approved)
+                                    <span class="ml-1 px-1.5 py-0.5 rounded text-xs font-bold" style="background:#fff7ed; border:1px solid #fdba74; color:#c2410c;">Pending</span>
+                                @else
+                                    <span class="ml-1 px-1.5 py-0.5 rounded text-xs font-bold" style="background:#f0fdf4; border:1px solid #86efac; color:#15803d;">Approved</span>
+                                @endif
+                            @endif
+                        </td>
                         <td class="px-5 py-3" style="color:#6b7a72;">{{ $user->email }}</td>
                         <td class="px-5 py-3">
                             @php
@@ -68,22 +99,60 @@
                         </td>
                         <td class="px-5 py-3" style="color:#6b7a72;">{{ $user->created_at->format('M j, Y') }}</td>
                         <td class="px-5 py-3">
-                            @unless ($user->id === auth()->id())
-                                @if ($user->isActive())
-                                    <form method="POST" action="{{ route('admin.users.suspend', $user) }}" class="inline"
-                                          onsubmit="return confirm('Suspend {{ $user->name }}?')">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button class="text-xs font-medium" style="color:#dc2626;">Suspend</button>
-                                    </form>
-                                @else
-                                    <form method="POST" action="{{ route('admin.users.activate', $user) }}" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button class="text-xs font-medium" style="color:#15803d;">Activate</button>
-                                    </form>
-                                @endif
-                            @endunless
+                            <div class="flex flex-wrap items-center gap-3">
+                                @unless ($user->id === auth()->id())
+                                    {{-- Suspend / Activate --}}
+                                    @if ($user->isActive())
+                                        <form method="POST" action="{{ route('admin.users.suspend', $user) }}" class="inline"
+                                              onsubmit="return confirm('Suspend {{ addslashes($user->name) }}?')">
+                                            @csrf @method('PATCH')
+                                            <button class="text-xs font-medium" style="color:#dc2626;">Suspend</button>
+                                        </form>
+                                    @else
+                                        <form method="POST" action="{{ route('admin.users.activate', $user) }}" class="inline">
+                                            @csrf @method('PATCH')
+                                            <button class="text-xs font-medium" style="color:#15803d;">Activate</button>
+                                        </form>
+                                    @endif
+
+                                    {{-- Approve / Reject mentor --}}
+                                    @if ($user->isMentor() && $user->mentorProfile)
+                                        @if (! $user->mentorProfile->is_approved)
+                                            <form method="POST" action="{{ route('admin.users.approve', $user) }}" class="inline">
+                                                @csrf @method('PATCH')
+                                                <button class="text-xs font-bold px-2 py-0.5 rounded transition"
+                                                        style="background:rgba(26,51,39,.1); color:#1a3327;"
+                                                        onmouseover="this.style.background='rgba(26,51,39,.2)'" onmouseout="this.style.background='rgba(26,51,39,.1)'">
+                                                    ✓ Approve
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form method="POST" action="{{ route('admin.users.reject', $user) }}" class="inline"
+                                                  onsubmit="return confirm('Hide {{ addslashes($user->name) }} from discovery?')">
+                                                @csrf @method('PATCH')
+                                                <button class="text-xs font-bold px-2 py-0.5 rounded transition"
+                                                        style="background:#fff0f0; color:#dc2626;"
+                                                        onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fff0f0'">
+                                                    ✕ Revoke
+                                                </button>
+                                            </form>
+                                        @endif
+                                    @endif
+
+                                    {{-- Impersonate --}}
+                                    @unless ($user->isAdmin())
+                                        <form method="POST" action="{{ route('admin.users.impersonate', $user) }}" class="inline"
+                                              onsubmit="return confirm('Impersonate {{ addslashes($user->name) }}?')">
+                                            @csrf
+                                            <button class="text-xs font-bold px-2 py-0.5 rounded transition"
+                                                    style="background:rgba(124,58,237,.1); color:#7c3aed;"
+                                                    onmouseover="this.style.background='rgba(124,58,237,.2)'" onmouseout="this.style.background='rgba(124,58,237,.1)'">
+                                                👤 Impersonate
+                                            </button>
+                                        </form>
+                                    @endunless
+                                @endunless
+                            </div>
                         </td>
                     </tr>
                 @endforeach

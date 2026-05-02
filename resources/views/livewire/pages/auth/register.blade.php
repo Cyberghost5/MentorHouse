@@ -74,12 +74,12 @@ new #[Layout('layouts.guest')] class extends Component
                 <label class="flex items-center gap-2 cursor-pointer">
                     <input wire:model="role" type="radio" name="role" value="mentee"
                            class="" style="accent-color:#1a3327;" />
-                <span class="text-sm" style="color:#4a5e55;">{{ __('Mentee') }} — <span style="color:#6b7a72;">{{ __('I want to learn') }}</span></span>
+                <span class="text-sm" style="color:#4a5e55;">{{ __('Mentee') }} - <span style="color:#6b7a72;">{{ __('I want to learn') }}</span></span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer">
                     <input wire:model="role" type="radio" name="role" value="mentor"
                            class="" style="accent-color:#1a3327;" />
-                    <span class="text-sm" style="color:#4a5e55;">{{ __('Mentor') }} — <span style="color:#6b7a72;">{{ __('I want to teach') }}</span></span>
+                    <span class="text-sm" style="color:#4a5e55;">{{ __('Mentor') }} - <span style="color:#6b7a72;">{{ __('I want to teach') }}</span></span>
                 </label>
             </div>
             <x-input-error :messages="$errors->get('role')" class="mt-2" />
