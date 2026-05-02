@@ -19,6 +19,8 @@ class SessionRequest extends Model
     ];
 
     protected $casts = [
+        'mentor_id'     => 'integer',
+        'mentee_id'     => 'integer',
         'proposed_date' => 'datetime',
         'fee_amount'    => 'decimal:2',
     ];
